@@ -1,741 +1,699 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sistema de Pedidos - Viaturas, Fornecedores e Pedidos</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0; padding: 0; background: #f4f7f8; color: #333;
-    max-width: 960px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  header {
-    background: #34495e; color: white; padding: 15px 20px;
-    font-size: 1.5em; font-weight: bold;
-    text-align: center;
-  }
-  nav {
-    display: flex; background: #2c3e50;
-  }
-  nav button {
-    flex: 1;
-    padding: 15px;
-    background: #2c3e50;
-    border: none;
-    color: white;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  nav button:hover, nav button.active {
-    background: #1abc9c;
-    color: #fff;
-  }
-  main {
-    padding: 20px;
-  }
-  section {
-    display: none;
-  }
-  section.active {
-    display: block;
-  }
-  h2 {
-    color: #34495e;
-    margin-bottom: 15px;
-  }
-  label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-  }
-  input, select, textarea, button {
-    margin-top: 5px;
-    padding: 8px;
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
-  }
-  textarea {
-    height: 60px;
-    resize: vertical;
-  }
-  button.primary {
-    background: #1abc9c;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-top: 15px;
-    max-width: 200px;
-  }
-  button.primary:hover {
-    background: #16a085;
-  }
-  ul.list-pedidos {
-    list-style: none;
-    padding: 0;
-  }
-  ul.list-pedidos li {
-    background: white;
-    margin-bottom: 10px;
-    padding: 15px;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  ul.list-pedidos li span.status {
-    padding: 5px 10px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 0.9em;
-    color: white;
-  }
-  span.status.finalizado { background: #27ae60; }
-  span.status.rascunho { background: #f39c12; }
-  span.status.cancelado { background: #c0392b; }
-
-  /* Modal */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5);
-  }
-  .modal-content {
-    background-color: #fff;
-    margin: 50px auto;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 700px;
-    position: relative;
-  }
-  .close-btn {
-    position: absolute;
-    right: 15px; top: 15px;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #999;
-    cursor: pointer;
-  }
-  .close-btn:hover {
-    color: #333;
-  }
-  .flex-row {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  .flex-row > * {
-    flex: 1;
-    min-width: 150px;
-  }
-  .item-list {
-    margin-top: 10px;
-    max-height: 150px;
-    overflow-y: auto;
-    background: #ecf0f1;
-    padding: 10px;
-    border-radius: 6px;
-  }
-  .item-list li {
-    margin-bottom: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .item-list button {
-    background: #e74c3c;
-    border: none;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .item-list button:hover {
-    background: #c0392b;
-  }
-  .history {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    padding: 10px;
-    max-height: 150px;
-    overflow-y: auto;
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #555;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-  }
-  th, td {
-    border: 1px solid #ccc;
-    padding: 8px 10px;
-    text-align: left;
-  }
-  th {
-    background-color: #1abc9c;
-    color: white;
-  }
-  tbody tr:nth-child(even) {
-    background-color: #eaf2f8;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastro de Fornecedores e Gestão de Empenhos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    h2, h3 {
+      color: #333;
+    }
+    form {
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      max-width: 700px;
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-transform: uppercase; /* Força visual maiúsculo */
+    }
+    input[type="email"] {
+      text-transform: none; /* Email não deve ser maiúsculo visualmente */
+    }
+    button.primary {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    button.primary:hover {
+      background-color: #0056b3;
+    }
+    ul#listaFornecedores {
+      list-style: none;
+      padding-left: 0;
+      max-width: 900px;
+    }
+    ul#listaFornecedores li {
+      background: #fff;
+      margin-bottom: 8px;
+      padding: 10px 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 3px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+    ul#listaFornecedores li strong {
+      text-transform: uppercase;
+    }
+    ul#listaFornecedores li button {
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #007bff;
+      background: white;
+      color: #007bff;
+      text-transform: uppercase;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+    ul#listaFornecedores li button:hover {
+      background: #007bff;
+      color: white;
+    }
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+      padding-top: 50px;
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 900px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      right: 15px;
+      top: 10px;
+    }
+    .close-btn:hover,
+    .close-btn:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      font-size: 13px;
+    }
+    th {
+      background-color: #f2f2f2;
+      text-transform: uppercase;
+    }
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid #dc3545;
+      background: white;
+      color: #dc3545;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .btn-small:hover {
+      background: #dc3545;
+      color: white;
+    }
+    .btn-add-item {
+      margin-top: 10px;
+      background-color: #28a745;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 8px 15px;
+      text-transform: uppercase;
+    }
+    .btn-add-item:hover {
+      background-color: #218838;
+    }
+    .section-title {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 16px;
+      text-transform: uppercase;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+    .flex-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .flex-col {
+      flex: 1;
+      min-width: 150px;
+    }
+    .input-small {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .text-right {
+      text-align: right;
+    }
+  </style>
 </head>
 <body>
 
-<header>Sistema de Pedidos - Viaturas, Fornecedores e Pedidos</header>
+<section id="tab-fornecedores">
+  <h2>Cadastro de Fornecedores</h2>
+  <form id="formFornecedor" onsubmit="event.preventDefault(); adicionarFornecedor();">
+    <label for="fornecedorNome">Nome Fantasia *</label>
+    <input type="text" id="fornecedorNome" required placeholder="Nome Fantasia" autocomplete="off" />
 
-<nav>
-  <button class="active" data-tab="tab-viaturas">Viaturas/Equipamentos</button>
-  <button data-tab="tab-fornecedores">Fornecedores</button>
-  <button data-tab="tab-pedidos">Pedidos</button>
-</nav>
+    <label for="fornecedorCNPJ">CNPJ *</label>
+    <input type="text" id="fornecedorCNPJ" required placeholder="CNPJ (somente números)" maxlength="14" autocomplete="off" />
 
-<main>
-  <!-- Viaturas -->
-  <section id="tab-viaturas" class="active">
-    <h2>Lista de Viaturas e Equipamentos</h2>
-    <table>
+    <label for="fornecedorEmail">Email *</label>
+    <input type="email" id="fornecedorEmail" required placeholder="Email" autocomplete="off" />
+
+    <label for="fornecedorContato">Contato</label>
+    <input type="text" id="fornecedorContato" placeholder="Contato" autocomplete="off" />
+
+    <button type="submit" class="primary">Adicionar Fornecedor</button>
+  </form>
+
+  <h3>Fornecedores Cadastrados</h3>
+  <ul id="listaFornecedores"></ul>
+</section>
+
+<!-- Modal Gestão de Empenhos -->
+<div id="modalEmpenhos" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="fecharModalEmpenhos()">&times;</span>
+    <h2>Gestão de Empenhos - <span id="modalFornecedorNome"></span></h2>
+
+    <!-- Formulário cadastro empenho -->
+    <form id="formEmpenho" onsubmit="event.preventDefault(); adicionarEmpenho();">
+      <div class="section-title">Dados do Empenho</div>
+      <div class="flex-row">
+        <div class="flex-col">
+          <label for="numeroEmpenho">Número do Empenho *</label>
+          <input type="text" id="numeroEmpenho" required autocomplete="off" />
+        </div>
+        <div class="flex-col">
+          <label for="planoInterno">Plano Interno</label>
+          <input type="text" id="planoInterno" autocomplete="off" />
+        </div>
+        <div class="flex-col">
+          <label for="notaCredito">Nota de Crédito</label>
+          <input type="text" id="notaCredito" autocomplete="off" />
+        </div>
+      </div>
+      <div class="flex-row">
+        <div class="flex-col">
+          <label for="pec">PEC</label>
+          <input type="text" id="pec" autocomplete="off" />
+        </div>
+        <div class="flex-col">
+          <label for="oog">O.O.G</label>
+          <input type="text" id="oog" autocomplete="off" />
+        </div>
+        <div class="flex-col">
+          <label for="recurso">Recurso</label>
+          <input type="text" id="recurso" autocomplete="off" />
+        </div>
+      </div>
+      <div class="flex-row">
+        <div class="flex-col">
+          <label for="descontoEmpenho">Desconto Geral (%)</label>
+          <input type="number" id="descontoEmpenho" min="0" max="100" step="0.01" value="0" />
+        </div>
+        <div class="flex-col">
+          <label for="pregao">Número do Pregão</label>
+          <input type="text" id="pregao" autocomplete="off" />
+        </div>
+        <div class="flex-col">
+          <label for="itemPregao">Item Pregão</label>
+          <input type="number" id="itemPregao" min="0" autocomplete="off" />
+        </div>
+        <div class="flex-col">
+          <label for="quantidadePregao">Quantidade Pregão</label>
+          <input type="number" id="quantidadePregao" min="0" autocomplete="off" />
+        </div>
+      </div>
+      <div class="flex-row">
+        <div class="flex-col" style="flex: 1 1 100%;">
+          <label for="naturezaDespesa">Natureza da Despesa</label>
+          <input type="text" id="naturezaDespesa" placeholder="00.00.00" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="section-title">Itens do Empenho</div>
+      <div class="flex-row" style="align-items: flex-end;">
+        <div class="flex-col" style="flex: 3;">
+          <label for="descricaoItem">Descrição do Item *</label>
+          <input type="text" id="descricaoItem" autocomplete="off" />
+        </div>
+        <div class="flex-col" style="flex: 1;">
+          <label for="valorUnitarioItem">Valor Unitário (R$) *</label>
+          <input type="number" id="valorUnitarioItem" min="0" step="0.01" />
+        </div>
+        <div class="flex-col" style="flex: 1;">
+          <label for="descontoItem">Desconto Item (%)</label>
+          <input type="number" id="descontoItem" min="0" max="100" step="0.01" value="0" />
+        </div>
+        <div class="flex-col" style="flex: 1;">
+          <button type="button" class="btn-add-item" onclick="adicionarItemEmpenho()">Adicionar Item</button>
+        </div>
+      </div>
+
+      <table id="tabelaItensEmpenho">
+        <thead>
+          <tr>
+            <th>Descrição do Item</th>
+            <th>Valor Unitário (R$)</th>
+            <th>Desconto (%)</th>
+            <th>Valor Total (R$)</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Itens adicionados aparecerão aqui -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3" class="text-right">Valor Total do Empenho (sem desconto geral):</th>
+            <th id="valorTotalItens">0,00</th>
+            <th></th>
+          </tr>
+          <tr>
+            <th colspan="3" class="text-right">Desconto Geral do Empenho (%):</th>
+            <th id="descontoGeralExibido">0,00%</th>
+            <th></th>
+          </tr>
+          <tr>
+            <th colspan="3" class="text-right">Valor Total com Desconto Geral (R$):</th>
+            <th id="valorTotalComDesconto">0,00</th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+
+      <button type="submit" class="primary" style="margin-top: 15px;">Salvar Empenho</button>
+    </form>
+
+    <div class="section-title">Empenhos Cadastrados</div>
+    <table id="tabelaEmpenhos">
       <thead>
         <tr>
-          <th>Prefixo</th>
-          <th>Chassi</th>
-          <th>Fabricante</th>
-          <th>Modelo</th>
-          <th>Ano</th>
+          <th>Número Empenho</th>
+          <th>Plano Interno</th>
+          <th>Nota Crédito</th>
+          <th>PEC</th>
+          <th>O.O.G</th>
+          <th>Recurso</th>
+          <th>Desconto Geral (%)</th>
+          <th>Pregão</th>
+          <th>Item Pregão</th>
+          <th>Qtd Pregão</th>
+          <th>Natureza Despesa</th>
+          <th>Valor Total (R$)</th>
+          <th>Ações</th>
         </tr>
       </thead>
-      <tbody id="viaturasTableBody"></tbody>
+      <tbody>
+        <!-- Empenhos cadastrados aparecerão aqui -->
+      </tbody>
     </table>
-  </section>
-
-  <!-- Fornecedores -->
-  <section id="tab-fornecedores">
-    <h2>Cadastro de Fornecedores</h2>
-    <div class="flex-row">
-      <input type="text" id="fornecedorNome" placeholder="Nome do Fornecedor" />
-      <input type="text" id="fornecedorContato" placeholder="Contato" />
-    </div>
-    <button class="primary" onclick="addFornecedor()">Adicionar Fornecedor</button>
-
-    <h3>Fornecedores Cadastrados</h3>
-    <ul id="listaFornecedores"></ul>
-  </section>
-
-  <!-- Pedidos -->
-  <section id="tab-pedidos">
-    <h2>Pedidos</h2>
-    <button class="primary" onclick="abrirModalPedido()">Novo Pedido</button>
-
-    <h3>Lista de Pedidos</h3>
-    <ul id="listaPedidos" class="list-pedidos"></ul>
-  </section>
-</main>
-
-<!-- Modal Novo Pedido -->
-<div id="modalPedido" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
-  <div class="modal-content">
-    <span class="close-btn" onclick="fecharModalPedido()" title="Fechar">&times;</span>
-    <h2 id="modalTitle">Novo Pedido</h2>
-
-    <label for="tipoPedido">Tipo de Pedido:</label>
-    <select id="tipoPedido" onchange="renderItemInputs()">
-      <option value="peca">Peças/Acessórios</option>
-      <option value="servico">Serviços</option>
-    </select>
-
-    <label for="pedidoViatura">Viatura/Equipamento:</label>
-    <select id="pedidoViatura"></select>
-
-    <label for="pedidoFornecedor">Fornecedor:</label>
-    <select id="pedidoFornecedor"></select>
-
-    <label for="pedidoResponsavel">Responsável:</label>
-    <input type="text" id="pedidoResponsavel" placeholder="Nome do responsável" />
-
-    <label for="pedidoData">Data:</label>
-    <input type="date" id="pedidoData" />
-
-    <label for="pedidoObservacoes">Observações:</label>
-    <textarea id="pedidoObservacoes" placeholder="Observações"></textarea>
-
-    <h3>Adicionar Item</h3>
-    <div id="itemInputs" class="flex-row"></div>
-    <button class="primary" onclick="addItem()">Adicionar Item</button>
-
-    <h3>Itens do Pedido</h3>
-    <ul id="listaItens" class="item-list"></ul>
-
-    <h3>Histórico de Edições</h3>
-    <div id="historico" class="history"></div>
-
-    <div style="margin-top:20px;">
-      <button class="primary" onclick="salvarPedido()">Salvar Pedido</button>
-      <button onclick="exportarExcel()" class="btn-inline" style="margin-left:10px;">Exportar Excel</button>
-      <button onclick="gerarPDF()" class="btn-inline" style="margin-left:10px;">Gerar PDF</button>
-    </div>
   </div>
 </div>
 
-<!-- Bibliotecas externas -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-
 <script>
-  // Dados viaturas fixos conforme lista fornecida (exemplo parcial)
-  const viaturas = {
-    "AM-00064": { chassi: "93YMAF4MEEJ634527", fabricante: "RENAULT", modelo: "MASTER FURGÃO UTI", ano: "2012" },
-    "AM-00088": { chassi: "9BFLF49P8HB011899", fabricante: "FORD", modelo: "F4000", ano: "2017" },
-    "CÂMARA FRIGORÍFICA": { chassi: "9A9FR3883ECDB5485", fabricante: "NIJU", modelo: "NJSRFR 3E", ano: "2012" },
-    "CB-00566": { chassi: "9BFZEANE4JBS68029 1034799", fabricante: "FORD", modelo: "2629", ano: "2017" },
-    "CB-00569": { chassi: "9BFZEANE2JBS68031", fabricante: "FORD", modelo: "2629", ano: "2017" }
-    // ... adicione mais conforme necessário
-  };
-
   const fornecedores = [];
-  const pedidos = [];
-  let itensPedido = [];
-  let historico = [];
 
-  // Elementos DOM
-  const viaturasTableBody = document.getElementById('viaturasTableBody');
-  const listaFornecedores = document.getElementById('listaFornecedores');
-  const listaPedidos = document.getElementById('listaPedidos');
-
-  // Modal elementos
-  const modal = document.getElementById('modalPedido');
-  const tipoPedido = document.getElementById('tipoPedido');
-  const pedidoViatura = document.getElementById('pedidoViatura');
-  const pedidoFornecedor = document.getElementById('pedidoFornecedor');
-  const pedidoResponsavel = document.getElementById('pedidoResponsavel');
-  const pedidoData = document.getElementById('pedidoData');
-  const pedidoObservacoes = document.getElementById('pedidoObservacoes');
-  const itemInputs = document.getElementById('itemInputs');
-  const listaItens = document.getElementById('listaItens');
-  const historicoDiv = document.getElementById('historico');
-
-  // Navegação abas
-  document.querySelectorAll('nav button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const tab = btn.getAttribute('data-tab');
-      document.querySelectorAll('main section').forEach(sec => {
-        sec.classList.toggle('active', sec.id === tab);
-      });
+  // Força maiúsculo em inputs texto (exceto email)
+  ['fornecedorNome', 'fornecedorContato', 'fornecedorCNPJ'].forEach(id => {
+    const input = document.getElementById(id);
+    input.addEventListener('input', e => {
+      e.target.value = e.target.value.toUpperCase();
     });
   });
 
-  // Preencher tabela viaturas
-  function preencherTabelaViaturas() {
-    viaturasTableBody.innerHTML = '';
-    for (const prefixo in viaturas) {
-      if (viaturas.hasOwnProperty(prefixo)) {
-        const v = viaturas[prefixo];
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${prefixo}</td>
-          <td>${v.chassi}</td>
-          <td>${v.fabricante}</td>
-          <td>${v.modelo}</td>
-          <td>${v.ano}</td>
-        `;
-        viaturasTableBody.appendChild(tr);
-      }
-    }
+  // Força maiúsculo em inputs do modal empenho (texto)
+  ['numeroEmpenho', 'planoInterno', 'notaCredito', 'pec', 'oog', 'recurso', 'pregao', 'naturezaDespesa', 'descricaoItem'].forEach(id => {
+    const input = document.getElementById(id);
+    input.addEventListener('input', e => {
+      e.target.value = e.target.value.toUpperCase();
+    });
+  });
+
+  // Validação simples do CNPJ: somente números e 14 dígitos
+  function validarCNPJ(cnpj) {
+    const cnpjNumeros = cnpj.replace(/\D/g, '');
+    return cnpjNumeros.length === 14;
   }
 
-  // Fornecedores
-  function addFornecedor() {
-    const nome = document.getElementById('fornecedorNome').value.trim();
-    const contato = document.getElementById('fornecedorContato').value.trim();
-    if (!nome) {
-      alert('Informe o nome do fornecedor.');
+  function adicionarFornecedor() {
+    const nomeInput = document.getElementById('fornecedorNome');
+    const cnpjInput = document.getElementById('fornecedorCNPJ');
+    const emailInput = document.getElementById('fornecedorEmail');
+    const contatoInput = document.getElementById('fornecedorContato');
+
+    const nome = nomeInput.value.trim().toUpperCase();
+    const cnpj = cnpjInput.value.trim().toUpperCase();
+    const email = emailInput.value.trim().toLowerCase();
+    const contato = contatoInput.value.trim().toUpperCase();
+
+    if (!nome || !cnpj || !email) {
+      alert('Preencha todos os campos obrigatórios.');
       return;
     }
-    fornecedores.push({ nome, contato });
+
+    if (!validarCNPJ(cnpj)) {
+      alert('CNPJ inválido. Deve conter 14 números.');
+      return;
+    }
+
+    // Validação simples de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Email inválido.');
+      return;
+    }
+
+    // Verifica se já existe fornecedor com mesmo CNPJ ou email
+    if (fornecedores.some(f => f.cnpj === cnpj)) {
+      alert('Fornecedor com este CNPJ já cadastrado.');
+      return;
+    }
+    if (fornecedores.some(f => f.email === email)) {
+      alert('Fornecedor com este email já cadastrado.');
+      return;
+    }
+
+    fornecedores.push({ nome, cnpj, email, contato, empenhos: [] });
     atualizarListaFornecedores();
-    atualizarSelectsModal();
-    document.getElementById('fornecedorNome').value = '';
-    document.getElementById('fornecedorContato').value = '';
+
+    nomeInput.value = '';
+    cnpjInput.value = '';
+    emailInput.value = '';
+    contatoInput.value = '';
   }
 
   function atualizarListaFornecedores() {
-    listaFornecedores.innerHTML = fornecedores.map((f, i) =>
-      `<li><strong>${f.nome}</strong> - Contato: ${f.contato || '-'}</li>`
-    ).join('');
-  }
+    const lista = document.getElementById('listaFornecedores');
+    lista.innerHTML = '';
 
-  // Atualiza selects do modal
-  function atualizarSelectsModal() {
-    // Viaturas
-    pedidoViatura.innerHTML = '<option value="">Selecione a Viatura</option>';
-    for (const prefixo in viaturas) {
-      if (viaturas.hasOwnProperty(prefixo)) {
-        const v = viaturas[prefixo];
-        const option = document.createElement('option');
-        option.value = prefixo;
-        option.textContent = `${prefixo} - ${v.fabricante} ${v.modelo} (${v.ano})`;
-        pedidoViatura.appendChild(option);
-      }
-    }
-    // Fornecedores
-    pedidoFornecedor.innerHTML = '<option value="">Selecione o Fornecedor</option>';
     fornecedores.forEach((f, i) => {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = f.nome;
-      pedidoFornecedor.appendChild(option);
-    });
-  }
-
-  // Modal abrir/fechar
-  function abrirModalPedido() {
-    if (Object.keys(viaturas).length === 0 || fornecedores.length === 0) {
-      alert('Cadastre pelo menos uma viatura e um fornecedor antes de criar um pedido.');
-      return;
-    }
-    modal.style.display = 'block';
-    modal.setAttribute('aria-hidden', 'false');
-    resetModalForm();
-  }
-  function fecharModalPedido() {
-    modal.style.display = 'none';
-    modal.setAttribute('aria-hidden', 'true');
-  }
-  window.onclick = function(event) {
-    if (event.target === modal) fecharModalPedido();
-  };
-
-  // Reset modal form
-  function resetModalForm() {
-    tipoPedido.value = 'peca';
-    pedidoViatura.value = '';
-    pedidoFornecedor.value = '';
-    pedidoResponsavel.value = '';
-    pedidoData.value = '';
-    pedidoObservacoes.value = '';
-    itensPedido = [];
-    historico = [];
-    renderItemInputs();
-    renderListaItens();
-    atualizarHistorico();
-  }
-
-  // Render inputs para item conforme tipo
-  function renderItemInputs() {
-    const tipo = tipoPedido.value;
-    itemInputs.innerHTML = '';
-    if (tipo === 'peca') {
-      itemInputs.innerHTML = `
-        <input type="text" id="itemCodigo" placeholder="Código Referência" />
-        <input type="text" id="itemDescricao" placeholder="Descrição" />
-        <input type="number" id="itemQuantidade" placeholder="Quantidade" min="1" />
-        <input type="number" id="itemValorUnitario" placeholder="Valor Unitário (R$)" min="0" step="0.01" />
-        <input type="number" id="itemDesconto" placeholder="Desconto (%)" min="0" max="100" step="0.01" />
-      `;
-    } else {
-      itemInputs.innerHTML = `
-        <input type="text" id="itemDescricao" placeholder="Descrição do Serviço" />
-        <input type="number" id="itemHoras" placeholder="Horas" min="0" step="0.1" />
-        <input type="number" id="itemValorHora" placeholder="Valor por Hora (R$)" min="0" step="0.01" />
-      `;
-    }
-  }
-
-  // Adicionar item ao pedido
-  function addItem() {
-    const tipo = tipoPedido.value;
-    if (tipo === 'peca') {
-      const codigo = document.getElementById('itemCodigo').value.trim();
-      const descricao = document.getElementById('itemDescricao').value.trim();
-      const quantidade = parseInt(document.getElementById('itemQuantidade').value);
-      const valorUnitario = parseFloat(document.getElementById('itemValorUnitario').value);
-      const desconto = parseFloat(document.getElementById('itemDesconto').value) || 0;
-      if (!codigo || !descricao || !quantidade || isNaN(valorUnitario)) {
-        alert('Preencha todos os campos do item peça corretamente.');
-        return;
-      }
-      itensPedido.push({ codigo, descricao, quantidade, valorUnitario, desconto });
-    } else {
-      const descricao = document.getElementById('itemDescricao').value.trim();
-      const horas = parseFloat(document.getElementById('itemHoras').value);
-      const valorHora = parseFloat(document.getElementById('itemValorHora').value);
-      if (!descricao || isNaN(horas) || isNaN(valorHora)) {
-        alert('Preencha todos os campos do item serviço corretamente.');
-        return;
-      }
-      itensPedido.push({ descricao, horas, valorHora });
-    }
-    renderListaItens();
-    addHistorico(`Item adicionado: ${tipo === 'peca' ? itensPedido[itensPedido.length-1].descricao : itensPedido[itensPedido.length-1].descricao}`);
-    limparCamposItem();
-  }
-
-  // Limpar campos de item
-  function limparCamposItem() {
-    const inputs = itemInputs.querySelectorAll('input');
-    inputs.forEach(i => i.value = '');
-  }
-
-  // Renderizar lista de itens
-  function renderListaItens() {
-    listaItens.innerHTML = '';
-    itensPedido.forEach((item, i) => {
-      let texto = '';
-      if (tipoPedido.value === 'peca') {
-        texto = `${item.codigo} - ${item.descricao} - Qtd: ${item.quantidade} - Valor Unit: R$${item.valorUnitario.toFixed(2)} - Desc: ${item.desconto.toFixed(2)}%`;
-      } else {
-        texto = `${item.descricao} - Horas: ${item.horas} - Valor Hora: R$${item.valorHora.toFixed(2)}`;
-      }
-      const li = document.createElement('li');
-      li.textContent = texto + ' ';
-      const btnDel = document.createElement('button');
-      btnDel.textContent = 'Excluir';
-      btnDel.onclick = () => {
-        itensPedido.splice(i, 1);
-        renderListaItens();
-        addHistorico('Item removido');
-      };
-      li.appendChild(btnDel);
-      listaItens.appendChild(li);
-    });
-  }
-
-  // Histórico
-  function addHistorico(texto) {
-    const now = new Date();
-    historico.unshift(`${now.toLocaleString()}: ${texto}`);
-    atualizarHistorico();
-  }
-
-  function atualizarHistorico() {
-    historicoDiv.innerHTML = historico.map(h => `<div>${h}</div>`).join('');
-  }
-
-  // Salvar pedido (em memória)
-  function salvarPedido() {
-    const viaturaPrefixo = pedidoViatura.value;
-    const fornecedorIndex = pedidoFornecedor.value;
-    const responsavel = pedidoResponsavel.value.trim();
-    const data = pedidoData.value;
-    const observacoes = pedidoObservacoes.value.trim();
-
-    if (!viaturaPrefixo || fornecedorIndex === '' || !responsavel || !data) {
-      alert('Preencha todos os campos obrigatórios do pedido.');
-      return;
-    }
-    if (itensPedido.length === 0) {
-      alert('Adicione pelo menos um item ao pedido.');
-      return;
-    }
-
-    const pedido = {
-      id: pedidos.length + 1,
-      tipo: tipoPedido.value,
-      viatura: { prefixo: viaturaPrefixo, ...viaturas[viaturaPrefixo] },
-      fornecedor: fornecedores[fornecedorIndex],
-      responsavel,
-      data,
-      observacoes,
-      itens: [...itensPedido],
-      status: 'finalizado',
-      historico: [...historico]
-    };
-    pedidos.push(pedido);
-    alert(`Pedido #${pedido.id} salvo com sucesso!`);
-
-    atualizarListaPedidos();
-    fecharModalPedido();
-  }
-
-  // Atualizar lista de pedidos na aba
-  function atualizarListaPedidos() {
-    listaPedidos.innerHTML = '';
-    pedidos.forEach(p => {
       const li = document.createElement('li');
       li.innerHTML = `
         <div>
-          <strong>Pedido #${p.id}</strong> - ${p.tipo === 'peca' ? 'Peças/Acessórios' : 'Serviços'}<br/>
-          Viatura: ${p.viatura.prefixo} - ${p.viatura.fabricante} ${p.viatura.modelo} (${p.viatura.ano})<br/>
-          Fornecedor: ${p.fornecedor.nome}<br/>
-          Responsável: ${p.responsavel}<br/>
-          Data: ${p.data}<br/>
-          Observações: ${p.observacoes || '-'}
+          <strong>${f.nome}</strong> - CNPJ: ${f.cnpj} - Email: ${f.email} - Contato: ${f.contato || '-'}
         </div>
-        <span class="status ${p.status}">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
+        <button onclick="abrirGestaoEmpenhos(${i})">Gerenciar Empenhos</button>
       `;
-      listaPedidos.appendChild(li);
+      lista.appendChild(li);
     });
   }
 
-  // Exportar Excel com formatação profissional usando SheetJS
-  function exportarExcel() {
-    if (itensPedido.length === 0) {
-      alert('Adicione itens antes de exportar.');
+  // Variáveis para controle do modal e fornecedor atual
+  let fornecedorAtualIndex = null;
+  let itensEmpenho = [];
+
+  function abrirGestaoEmpenhos(index) {
+    fornecedorAtualIndex = index;
+    const fornecedor = fornecedores[index];
+    document.getElementById('modalFornecedorNome').textContent = fornecedor.nome;
+
+    // Limpar formulário empenho e itens
+    limparFormularioEmpenho();
+
+    // Atualizar tabela de empenhos do fornecedor
+    atualizarTabelaEmpenhos();
+
+    // Mostrar modal
+    document.getElementById('modalEmpenhos').style.display = 'block';
+  }
+
+  function fecharModalEmpenhos() {
+    document.getElementById('modalEmpenhos').style.display = 'none';
+    fornecedorAtualIndex = null;
+    itensEmpenho = [];
+  }
+
+  // Limpa formulário e itens do empenho
+  function limparFormularioEmpenho() {
+    const campos = ['numeroEmpenho', 'planoInterno', 'notaCredito', 'pec', 'oog', 'recurso', 'descontoEmpenho', 'pregao', 'itemPregao', 'quantidadePregao', 'naturezaDespesa'];
+    campos.forEach(id => {
+      const el = document.getElementById(id);
+      if (el.type === 'number') el.value = el.min || 0;
+      else el.value = '';
+    });
+
+      // Limpar itens do empenho
+    itensEmpenho = [];
+    atualizarTabelaItensEmpenho();
+
+    // Reset campos de item
+    document.getElementById('descricaoItem').value = '';
+    document.getElementById('valorUnitarioItem').value = '';
+    document.getElementById('descontoItem').value = '0';
+
+    atualizarTotaisEmpenho();
+  }
+
+  // Adicionar item ao empenho
+  function adicionarItemEmpenho() {
+    const descricao = document.getElementById('descricaoItem').value.trim().toUpperCase();
+    const valorUnitario = parseFloat(document.getElementById('valorUnitarioItem').value);
+    const desconto = parseFloat(document.getElementById('descontoItem').value) || 0;
+
+    if (!descricao) {
+      alert('Descrição do item é obrigatória.');
       return;
     }
-    const XLSX = window.XLSX;
-
-    const wb = XLSX.utils.book_new();
-
-    // Dados do pedido
-    const pedidoInfo = [
-      ['Pedido de', tipoPedido.value === 'peca' ? 'Peças/Acessórios' : 'Serviços'],
-      ['Viatura', pedidoViatura.options[pedidoViatura.selectedIndex].text],
-      ['Fornecedor', pedidoFornecedor.options[pedidoFornecedor.selectedIndex].text],
-      ['Responsável', pedidoResponsavel.value],
-      ['Data', pedidoData.value],
-      ['Observações', pedidoObservacoes.value || '-'],
-      []
-    ];
-
-    // Itens
-    const header = tipoPedido.value === 'peca' ? ['Código', 'Descrição', 'Quantidade', 'Valor Unitário (R$)', 'Desconto (%)', 'Total (R$)'] :
-      ['Descrição', 'Horas', 'Valor Hora (R$)', 'Total (R$)'];
-
-    const dataRows = itensPedido.map(item => {
-      if (tipoPedido.value === 'peca') {
-        const total = item.quantidade * item.valorUnitario * (1 - item.desconto / 100);
-        return [item.codigo, item.descricao, item.quantidade, item.valorUnitario, item.desconto, total];
-      } else {
-        const total = item.horas * item.valorHora;
-        return [item.descricao, item.horas, item.valorHora, total];
-      }
-    });
-
-    const wsData = [...pedidoInfo, header, ...dataRows];
-
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-    // Ajustar largura colunas (exemplo)
-    const wscols = header.map(() => ({ wch: 20 }));
-    ws['!cols'] = wscols;
-
-    // Estilização simples para cabeçalho
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    for(let C = range.s.c; C <= range.e.c; ++C) {
-      const cell_address = XLSX.utils.encode_cell({c:C, r:pedidoInfo.length});
-      if(ws[cell_address]) {
-        ws[cell_address].s = {
-          font: { bold: true, color: { rgb: "FFFFFFFF" } },
-          fill: { fgColor: { rgb: "FF1ABC9C" } },
-          alignment: { horizontal: "center" },
-          border: {
-            top: { style: "thin", color: { rgb: "FF000000" } },
-            bottom: { style: "thin", color: { rgb: "FF000000" } },
-            left: { style: "thin", color: { rgb: "FF000000" } },
-            right: { style: "thin", color: { rgb: "FF000000" } }
-          }
-        };
-      }
-    }
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Pedido');
-
-    XLSX.writeFile(wb, `pedido_${tipoPedido.value}_${new Date().toISOString().slice(0,10)}.xlsx`);
-  }
-
-  // Gerar PDF com formatação profissional usando jsPDF + autotable
-  async function gerarPDF() {
-    if (itensPedido.length === 0) {
-      alert('Adicione itens antes de gerar PDF.');
+    if (isNaN(valorUnitario) || valorUnitario <= 0) {
+      alert('Valor unitário deve ser maior que zero.');
       return;
     }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    if (desconto < 0 || desconto > 100) {
+      alert('Desconto deve estar entre 0 e 100%.');
+      return;
+    }
 
-    // Cabeçalho
-    doc.setFontSize(18);
-    doc.setTextColor('#1abc9c');
-    doc.text('Pedido de ' + (tipoPedido.value === 'peca' ? 'Peças/Acessórios' : 'Serviços'), 105, 20, null, null, 'center');
-
-    doc.setFontSize(12);
-    doc.setTextColor('#000');
-
-    // Dados do pedido
-    doc.text(`Viatura: ${pedidoViatura.options[pedidoViatura.selectedIndex].text}`, 14, 30);
-    doc.text(`Fornecedor: ${pedidoFornecedor.options[pedidoFornecedor.selectedIndex].text}`, 14, 38);
-    doc.text(`Responsável: ${pedidoResponsavel.value}`, 14, 46);
-    doc.text(`Data: ${pedidoData.value}`, 14, 54);
-
-    // Observações
-    doc.text('Observações:', 14, 62);
-    doc.setFontSize(10);
-    doc.text(pedidoObservacoes.value || '-', 14, 68, { maxWidth: 180 });
-
-    // Itens tabela com autoTable
-    const columns = tipoPedido.value === 'peca' ? [
-      { header: 'Código', dataKey: 'codigo' },
-      { header: 'Descrição', dataKey: 'descricao' },
-      { header: 'Quantidade', dataKey: 'quantidade' },
-      { header: 'Valor Unitário (R$)', dataKey: 'valorUnitario' },
-      { header: 'Desconto (%)', dataKey: 'desconto' },
-      { header: 'Total (R$)', dataKey: 'total' }
-    ] : [
-      { header: 'Descrição', dataKey: 'descricao' },
-      { header: 'Horas', dataKey: 'horas' },
-      { header: 'Valor Hora (R$)', dataKey: 'valorHora' },
-      { header: 'Total (R$)', dataKey: 'total' }
-    ];
-
-    const rows = itensPedido.map(item => {
-      if (tipoPedido.value === 'peca') {
-        const total = item.quantidade * item.valorUnitario * (1 - item.desconto / 100);
-        return {
-          codigo: item.codigo,
-          descricao: item.descricao,
-          quantidade: item.quantidade,
-          valorUnitario: item.valorUnitario.toFixed(2),
-          desconto: item.desconto.toFixed(2),
-          total: total.toFixed(2)
-        };
-      } else {
-        const total = item.horas * item.valorHora;
-        return {
-          descricao: item.descricao,
-          horas: item.horas,
-          valorHora: item.valorHora.toFixed(2),
-          total: total.toFixed(2)
-        };
+    // Adiciona item ao array
+    itensEmpenho.push({
+      descricao,
+      valorUnitario,
+      descontoItem: desconto,
+      get valorTotal() {
+        return this.valorUnitario * (1 - this.descontoItem / 100);
       }
     });
 
-    doc.autoTable({
-      startY: 80,
-      head: [columns.map(c => c.header)],
-      body: rows.map(r => columns.map(c => r[c.dataKey])),
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: '#1abc9c', textColor: '#fff', halign: 'center' },
-      alternateRowStyles: { fillColor: '#f2f2f2' },
-      margin: { left: 14, right: 14 },
-      columnStyles: {
-        0: { cellWidth: 'auto' },
-        1: { cellWidth: 70 },
-      }
-    });
+    // Limpar campos do item
+    document.getElementById('descricaoItem').value = '';
+    document.getElementById('valorUnitarioItem').value = '';
+    document.getElementById('descontoItem').value = '0';
 
-    doc.save(`pedido_${tipoPedido.value}_${new Date().toISOString().slice(0,10)}.pdf`);
+    atualizarTabelaItensEmpenho();
+    atualizarTotaisEmpenho();
   }
 
-  // Inicialização
-  preencherTabelaViaturas();
-  atualizarSelectsModal();
-  renderItemInputs();
+  // Atualiza tabela de itens do empenho
+  function atualizarTabelaItensEmpenho() {
+    const tbody = document.querySelector('#tabelaItensEmpenho tbody');
+    tbody.innerHTML = '';
+
+    itensEmpenho.forEach((item, index) => {
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td>${item.descricao}</td>
+        <td class="text-right">${item.valorUnitario.toFixed(2).replace('.', ',')}</td>
+        <td class="text-right">${item.descontoItem.toFixed(2).replace('.', ',')}</td>
+        <td class="text-right">${item.valorTotal.toFixed(2).replace('.', ',')}</td>
+        <td class="text-center">
+          <button class="btn-small" onclick="removerItemEmpenho(${index})" title="Remover Item">X</button>
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Remove item do empenho
+  function removerItemEmpenho(index) {
+    if (confirm('Deseja remover este item?')) {
+      itensEmpenho.splice(index, 1);
+      atualizarTabelaItensEmpenho();
+      atualizarTotaisEmpenho();
+    }
+  }
+
+  // Atualiza totais do empenho (itens, desconto geral, total com desconto)
+  function atualizarTotaisEmpenho() {
+    const valorTotalItens = itensEmpenho.reduce((acc, item) => acc + item.valorTotal, 0);
+    const descontoGeral = parseFloat(document.getElementById('descontoEmpenho').value) || 0;
+    const valorComDesconto = valorTotalItens * (1 - descontoGeral / 100);
+
+    document.getElementById('valorTotalItens').textContent = valorTotalItens.toFixed(2).replace('.', ',');
+    document.getElementById('descontoGeralExibido').textContent = descontoGeral.toFixed(2).replace('.', ',') + '%';
+    document.getElementById('valorTotalComDesconto').textContent = valorComDesconto.toFixed(2).replace('.', ',');
+  }
+
+  // Atualiza totais ao mudar desconto geral
+  document.getElementById('descontoEmpenho').addEventListener('input', atualizarTotaisEmpenho);
+
+  // Adiciona empenho ao fornecedor
+  function adicionarEmpenho() {
+    if (fornecedorAtualIndex === null) {
+      alert('Fornecedor não selecionado.');
+      return;
+    }
+
+    const numeroEmpenho = document.getElementById('numeroEmpenho').value.trim().toUpperCase();
+    if (!numeroEmpenho) {
+      alert('Número do empenho é obrigatório.');
+      return;
+    }
+    if (itensEmpenho.length === 0) {
+      alert('Adicione pelo menos um item ao empenho.');
+      return;
+    }
+
+    const planoInterno = document.getElementById('planoInterno').value.trim().toUpperCase();
+    const notaCredito = document.getElementById('notaCredito').value.trim().toUpperCase();
+    const pec = document.getElementById('pec').value.trim().toUpperCase();
+    const oog = document.getElementById('oog').value.trim().toUpperCase();
+    const recurso = document.getElementById('recurso').value.trim().toUpperCase();
+    const descontoEmpenho = parseFloat(document.getElementById('descontoEmpenho').value) || 0;
+    const pregao = document.getElementById('pregao').value.trim().toUpperCase();
+    const itemPregao = parseInt(document.getElementById('itemPregao').value) || 0;
+    const quantidadePregao = parseInt(document.getElementById('quantidadePregao').value) || 0;
+    const naturezaDespesa = document.getElementById('naturezaDespesa').value.trim().toUpperCase();
+
+    // Verifica se empenho já existe para o fornecedor
+    const fornecedor = fornecedores[fornecedorAtualIndex];
+    if (fornecedor.empenhos.some(e => e.numeroEmpenho === numeroEmpenho)) {
+      alert('Empenho com este número já cadastrado para este fornecedor.');
+      return;
+    }
+
+    // Monta objeto empenho
+    const empenho = {
+      numeroEmpenho,
+      planoInterno,
+      notaCredito,
+      pec,
+      oog,
+      recurso,
+      desconto: descontoEmpenho,
+      pregao,
+      itemPregao,
+      quantidadePregao,
+      naturezaDespesa,
+      itens: [...itensEmpenho], // copia dos itens
+      get valorTotalEmpenho() {
+        const totalItens = this.itens.reduce((acc, item) => acc + item.valorTotal, 0);
+        return totalItens * (1 - this.desconto / 100);
+      }
+    };
+
+    // Adiciona empenho ao fornecedor
+    fornecedor.empenhos.push(empenho);
+
+    // Atualiza tabela e limpa formulário
+    atualizarTabelaEmpenhos();
+    limparFormularioEmpenho();
+
+    alert('Empenho cadastrado com sucesso!');
+  }
+
+  // Atualiza tabela de empenhos do fornecedor atual
+  function atualizarTabelaEmpenhos() {
+    if (fornecedorAtualIndex === null) return;
+
+    const fornecedor = fornecedores[fornecedorAtualIndex];
+    const tbody = document.querySelector('#tabelaEmpenhos tbody');
+    tbody.innerHTML = '';
+
+    fornecedor.empenhos.forEach((e, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${e.numeroEmpenho}</td>
+        <td>${e.planoInterno || '-'}</td>
+        <td>${e.notaCredito || '-'}</td>
+        <td>${e.pec || '-'}</td>
+        <td>${e.oog || '-'}</td>
+        <td>${e.recurso || '-'}</td>
+        <td class="text-right">${e.desconto.toFixed(2).replace('.', ',')}%</td>
+        <td>${e.pregao || '-'}</td>
+        <td class="text-right">${e.itemPregao || '-'}</td>
+        <td class="text-right">${e.quantidadePregao || '-'}</td>
+        <td>${e.naturezaDespesa || '-'}</td>
+        <td class="text-right">${e.valorTotalEmpenho.toFixed(2).replace('.', ',')}</td>
+        <td class="text-center">
+          <button class="btn-small" onclick="removerEmpenho(${i})" title="Remover Empenho">X</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Remove empenho do fornecedor atual
+  function removerEmpenho(index) {
+    if (fornecedorAtualIndex === null) return;
+    if (confirm('Deseja remover este empenho?')) {
+      fornecedores[fornecedorAtualIndex].empenhos.splice(index, 1);
+      atualizarTabelaEmpenhos();
+    }
+  }
+
+  // Fecha modal ao clicar fora do conteúdo
+  window.onclick = function(event) {
+    const modal = document.getElementById('modalEmpenhos');
+    if (event.target === modal) {
+      fecharModalEmpenhos();
+    }
+  };
 </script>
 
 </body>
