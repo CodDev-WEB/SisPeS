@@ -5,231 +5,339 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cadastro de Fornecedores e Gestão de Empenhos</title>
   <style>
+    /* Reset básico */
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f9f9f9;
-    }
-    h2, h3 {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background-color: #f4f6f8;
       color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
     }
+    h1, h2, h3 {
+      margin: 0 0 15px 0;
+      font-weight: 700;
+      color: #2c3e50;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    /* Container principal */
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: white;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    /* Formulário */
     form {
-      background: #fff;
-      padding: 15px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      max-width: 700px;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
     label {
       display: block;
-      margin-top: 10px;
-      font-weight: bold;
+      font-weight: 600;
+      margin-bottom: 6px;
       text-transform: uppercase;
+      font-size: 13px;
+      color: #34495e;
     }
     input[type="text"],
     input[type="email"],
     input[type="number"] {
       width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      text-transform: uppercase; /* Força visual maiúsculo */
+      padding: 10px 12px;
+      border: 1.8px solid #bdc3c7;
+      border-radius: 6px;
+      font-size: 15px;
+      transition: border-color 0.3s ease;
+      text-transform: uppercase;
+      color: #2c3e50;
     }
     input[type="email"] {
-      text-transform: none; /* Email não deve ser maiúsculo visualmente */
+      text-transform: none;
     }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="number"]:focus {
+      border-color: #2980b9;
+      outline: none;
+      box-shadow: 0 0 6px rgba(41, 128, 185, 0.4);
+    }
+    /* Botões */
     button.primary {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background-color: #007bff;
-      border: none;
+      background-color: #2980b9;
       color: white;
-      font-weight: bold;
-      border-radius: 4px;
+      border: none;
+      padding: 12px 25px;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 6px;
       cursor: pointer;
       text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background-color 0.3s ease;
+      margin-top: 15px;
+      user-select: none;
     }
     button.primary:hover {
-      background-color: #0056b3;
+      background-color: #1c5980;
     }
+    button.btn-small {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    button.btn-small:hover {
+      background: #c0392b;
+    }
+    button.btn-add-item {
+      background-color: #27ae60;
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    button.btn-add-item:hover {
+      background-color: #1e8449;
+    }
+    /* Lista fornecedores */
     ul#listaFornecedores {
       list-style: none;
       padding-left: 0;
-      max-width: 900px;
+      max-width: 100%;
+      margin-top: 10px;
     }
     ul#listaFornecedores li {
-      background: #fff;
-      margin-bottom: 8px;
-      padding: 10px 15px;
-      border-radius: 6px;
-      box-shadow: 0 0 3px rgba(0,0,0,0.1);
+      background: #ecf0f1;
+      margin-bottom: 10px;
+      padding: 15px 20px;
+      border-radius: 8px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      font-size: 14px;
+      align-items: center;
+      font-size: 15px;
+      color: #2c3e50;
       flex-wrap: wrap;
     }
     ul#listaFornecedores li strong {
+      font-size: 16px;
+      letter-spacing: 1px;
       text-transform: uppercase;
+    }
+    ul#listaFornecedores li div {
+      flex: 1 1 auto;
+      min-width: 250px;
     }
     ul#listaFornecedores li button {
-      padding: 6px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      border-radius: 4px;
-      border: 1px solid #007bff;
-      background: white;
-      color: #007bff;
-      text-transform: uppercase;
-      margin-left: 10px;
-      white-space: nowrap;
+      flex: 0 0 auto;
+      margin-left: 15px;
     }
-    ul#listaFornecedores li button:hover {
-      background: #007bff;
-      color: white;
-    }
-    /* Modal styles */
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
       z-index: 9999;
       left: 0; top: 0;
       width: 100%; height: 100%;
-      overflow: auto;
+      overflow-y: auto;
       background-color: rgba(0,0,0,0.5);
-      padding-top: 50px;
+      padding: 40px 20px;
+      box-sizing: border-box;
     }
     .modal-content {
-      background-color: #fefefe;
+      background-color: #fff;
       margin: auto;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 900px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      padding: 25px 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 1000px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       position: relative;
+      animation: fadeInScale 0.3s ease forwards;
+    }
+    @keyframes fadeInScale {
+      0% {opacity: 0; transform: scale(0.9);}
+      100% {opacity: 1; transform: scale(1);}
     }
     .close-btn {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
+      color: #7f8c8d;
+      font-size: 30px;
+      font-weight: 700;
       cursor: pointer;
       position: absolute;
-      right: 15px;
-      top: 10px;
+      right: 20px;
+      top: 15px;
+      user-select: none;
+      transition: color 0.3s ease;
     }
-    .close-btn:hover,
-    .close-btn:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
+    .close-btn:hover {
+      color: #e74c3c;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-      font-size: 13px;
-    }
-    th {
-      background-color: #f2f2f2;
-      text-transform: uppercase;
-    }
-    .btn-small {
-      padding: 4px 8px;
-      font-size: 12px;
-      border-radius: 4px;
-      border: 1px solid #dc3545;
-      background: white;
-      color: #dc3545;
-      cursor: pointer;
-      text-transform: uppercase;
-    }
-    .btn-small:hover {
-      background: #dc3545;
-      color: white;
-    }
-    .btn-add-item {
-      margin-top: 10px;
-      background-color: #28a745;
-      border: none;
-      color: white;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      padding: 8px 15px;
-      text-transform: uppercase;
-    }
-    .btn-add-item:hover {
-      background-color: #218838;
-    }
+    /* Títulos seções modal */
     .section-title {
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 16px;
+      margin-top: 25px;
+      font-weight: 700;
+      font-size: 18px;
       text-transform: uppercase;
-      border-bottom: 2px solid #007bff;
-      padding-bottom: 5px;
+      border-bottom: 3px solid #2980b9;
+      padding-bottom: 6px;
+      color: #34495e;
     }
+    /* Flex layout para formulários */
     .flex-row {
       display: flex;
-      gap: 10px;
+      gap: 15px;
       flex-wrap: wrap;
+      margin-top: 10px;
     }
     .flex-col {
       flex: 1;
-      min-width: 150px;
+      min-width: 180px;
     }
+    .flex-col-full {
+      flex: 1 1 100%;
+    }
+    /* Inputs pequenos */
     .input-small {
       width: 100%;
       box-sizing: border-box;
     }
-    .text-right {
+    /* Tabela */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+    table, th, td {
+      border: 1px solid #bdc3c7;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background-color: #ecf0f1;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    td.text-right {
       text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    td.text-center {
+      text-align: center;
+    }
+    /* Scroll horizontal para tabelas em telas pequenas */
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 15px;
+    }
+    /* Tooltip para botões */
+    button[title] {
+      position: relative;
+    }
+    button[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #34495e;
+      color: white;
+      padding: 5px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 12px;
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: 10;
+    }
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .flex-row {
+        flex-direction: column;
+      }
+      .flex-col {
+        min-width: 100%;
+      }
+      ul#listaFornecedores li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      ul#listaFornecedores li button {
+        margin-left: 0;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
 
-<section id="tab-fornecedores">
-  <h2>Cadastro de Fornecedores</h2>
-  <form id="formFornecedor" onsubmit="event.preventDefault(); adicionarFornecedor();">
-    <label for="fornecedorNome">Nome Fantasia *</label>
-    <input type="text" id="fornecedorNome" required placeholder="Nome Fantasia" autocomplete="off" />
+<div class="container">
+  <h1>Cadastro de Fornecedores e Gestão de Empenhos</h1>
 
-    <label for="fornecedorCNPJ">CNPJ *</label>
-    <input type="text" id="fornecedorCNPJ" required placeholder="CNPJ (somente números)" maxlength="14" autocomplete="off" />
+  <section id="tab-fornecedores">
+    <h2>Cadastro de Fornecedores</h2>
+    <form id="formFornecedor" onsubmit="event.preventDefault(); adicionarFornecedor();">
+      <div class="flex-row">
+        <div class="flex-col">
+          <label for="fornecedorNome">Nome Fantasia *</label>
+          <input type="text" id="fornecedorNome" required placeholder="Nome Fantasia" autocomplete="off" />
+        </div>
+        <div class="flex-col">
+          <label for="fornecedorCNPJ">CNPJ *</label>
+          <input type="text" id="fornecedorCNPJ" required placeholder="CNPJ (somente números)" maxlength="14" autocomplete="off" />
+        </div>
+      </div>
+      <div class="flex-row">
+        <div class="flex-col">
+          <label for="fornecedorEmail">Email *</label>
+          <input type="email" id="fornecedorEmail" required placeholder="Email" autocomplete="off" />
+        </div>
+        <div class="flex-col">
+          <label for="fornecedorContato">Contato</label>
+          <input type="text" id="fornecedorContato" placeholder="Contato" autocomplete="off" />
+        </div>
+      </div>
+      <button type="submit" class="primary">Adicionar Fornecedor</button>
+    </form>
 
-    <label for="fornecedorEmail">Email *</label>
-    <input type="email" id="fornecedorEmail" required placeholder="Email" autocomplete="off" />
-
-    <label for="fornecedorContato">Contato</label>
-    <input type="text" id="fornecedorContato" placeholder="Contato" autocomplete="off" />
-
-    <button type="submit" class="primary">Adicionar Fornecedor</button>
-  </form>
-
-  <h3>Fornecedores Cadastrados</h3>
-  <ul id="listaFornecedores"></ul>
-</section>
+    <h3>Fornecedores Cadastrados</h3>
+    <ul id="listaFornecedores"></ul>
+  </section>
+</div>
 
 <!-- Modal Gestão de Empenhos -->
-<div id="modalEmpenhos" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="fecharModalEmpenhos()">&times;</span>
-    <h2>Gestão de Empenhos - <span id="modalFornecedorNome"></span></h2>
+<div id="modalEmpenhos" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+  <div class="modal-content" role="document">
+    <span class="close-btn" onclick="fecharModalEmpenhos()" aria-label="Fechar">&times;</span>
+    <h2 id="modalTitle">Gestão de Empenhos - <span id="modalFornecedorNome"></span></h2>
 
-    <!-- Formulário cadastro empenho -->
     <form id="formEmpenho" onsubmit="event.preventDefault(); adicionarEmpenho();">
       <div class="section-title">Dados do Empenho</div>
       <div class="flex-row">
@@ -279,7 +387,7 @@
         </div>
       </div>
       <div class="flex-row">
-        <div class="flex-col" style="flex: 1 1 100%;">
+        <div class="flex-col flex-col-full">
           <label for="naturezaDespesa">Natureza da Despesa</label>
           <input type="text" id="naturezaDespesa" placeholder="00.00.00" autocomplete="off" />
         </div>
@@ -304,64 +412,68 @@
         </div>
       </div>
 
-      <table id="tabelaItensEmpenho">
-        <thead>
-          <tr>
-            <th>Descrição do Item</th>
-            <th>Valor Unitário (R$)</th>
-            <th>Desconto (%)</th>
-            <th>Valor Total (R$)</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Itens adicionados aparecerão aqui -->
-        </tbody>
-        <tfoot>
-          <tr>
-            <th colspan="3" class="text-right">Valor Total do Empenho (sem desconto geral):</th>
-            <th id="valorTotalItens">0,00</th>
-            <th></th>
-          </tr>
-          <tr>
-            <th colspan="3" class="text-right">Desconto Geral do Empenho (%):</th>
-            <th id="descontoGeralExibido">0,00%</th>
-            <th></th>
-          </tr>
-          <tr>
-            <th colspan="3" class="text-right">Valor Total com Desconto Geral (R$):</th>
-            <th id="valorTotalComDesconto">0,00</th>
-            <th></th>
-          </tr>
-        </tfoot>
-      </table>
+      <div class="table-responsive">
+        <table id="tabelaItensEmpenho" aria-label="Itens do Empenho">
+          <thead>
+            <tr>
+              <th>Descrição do Item</th>
+              <th>Valor Unitário (R$)</th>
+              <th>Desconto (%)</th>
+              <th>Valor Total (R$)</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Itens adicionados aparecerão aqui -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="3" class="text-right">Valor Total do Empenho (sem desconto geral):</th>
+              <th id="valorTotalItens">0,00</th>
+              <th></th>
+            </tr>
+            <tr>
+              <th colspan="3" class="text-right">Desconto Geral do Empenho (%):</th>
+              <th id="descontoGeralExibido">0,00%</th>
+              <th></th>
+            </tr>
+            <tr>
+              <th colspan="3" class="text-right">Valor Total com Desconto Geral (R$):</th>
+              <th id="valorTotalComDesconto">0,00</th>
+              <th></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
       <button type="submit" class="primary" style="margin-top: 15px;">Salvar Empenho</button>
     </form>
 
     <div class="section-title">Empenhos Cadastrados</div>
-    <table id="tabelaEmpenhos">
-      <thead>
-        <tr>
-          <th>Número Empenho</th>
-          <th>Plano Interno</th>
-          <th>Nota Crédito</th>
-          <th>PEC</th>
-          <th>O.O.G</th>
-          <th>Recurso</th>
-          <th>Desconto Geral (%)</th>
-          <th>Pregão</th>
-          <th>Item Pregão</th>
-          <th>Qtd Pregão</th>
-          <th>Natureza Despesa</th>
-          <th>Valor Total (R$)</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Empenhos cadastrados aparecerão aqui -->
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table id="tabelaEmpenhos" aria-label="Empenhos cadastrados">
+        <thead>
+          <tr>
+            <th>Número Empenho</th>
+            <th>Plano Interno</th>
+            <th>Nota Crédito</th>
+            <th>PEC</th>
+            <th>O.O.G</th>
+            <th>Recurso</th>
+            <th>Desconto Geral (%)</th>
+            <th>Pregão</th>
+            <th>Item Pregão</th>
+            <th>Qtd Pregão</th>
+            <th>Natureza Despesa</th>
+            <th>Valor Total (R$)</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Empenhos cadastrados aparecerão aqui -->
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -378,7 +490,7 @@
 
   // Força maiúsculo em inputs do modal empenho (texto)
   ['numeroEmpenho', 'planoInterno', 'notaCredito', 'pec', 'oog', 'recurso', 'pregao', 'naturezaDespesa', 'descricaoItem'].forEach(id => {
-    const input = document.getElementById(id);
+    const input = document.getElementBy    id);
     input.addEventListener('input', e => {
       e.target.value = e.target.value.toUpperCase();
     });
@@ -390,6 +502,12 @@
     return cnpjNumeros.length === 14;
   }
 
+  // Função para formatar número para moeda brasileira (R$)
+  function formatarMoeda(valor) {
+    return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // Cadastro de fornecedor
   function adicionarFornecedor() {
     const nomeInput = document.getElementById('fornecedorNome');
     const cnpjInput = document.getElementById('fornecedorCNPJ');
@@ -437,6 +555,7 @@
     contatoInput.value = '';
   }
 
+  // Atualiza lista de fornecedores na interface
   function atualizarListaFornecedores() {
     const lista = document.getElementById('listaFornecedores');
     lista.innerHTML = '';
@@ -447,7 +566,7 @@
         <div>
           <strong>${f.nome}</strong> - CNPJ: ${f.cnpj} - Email: ${f.email} - Contato: ${f.contato || '-'}
         </div>
-        <button onclick="abrirGestaoEmpenhos(${i})">Gerenciar Empenhos</button>
+        <button onclick="abrirGestaoEmpenhos(${i})" aria-label="Gerenciar empenhos do fornecedor ${f.nome}">Gerenciar Empenhos</button>
       `;
       lista.appendChild(li);
     });
@@ -457,23 +576,27 @@
   let fornecedorAtualIndex = null;
   let itensEmpenho = [];
 
+  // Abre modal de gestão de empenhos para fornecedor selecionado
   function abrirGestaoEmpenhos(index) {
     fornecedorAtualIndex = index;
     const fornecedor = fornecedores[index];
     document.getElementById('modalFornecedorNome').textContent = fornecedor.nome;
 
-    // Limpar formulário empenho e itens
     limparFormularioEmpenho();
-
-    // Atualizar tabela de empenhos do fornecedor
     atualizarTabelaEmpenhos();
 
-    // Mostrar modal
-    document.getElementById('modalEmpenhos').style.display = 'block';
+    const modal = document.getElementById('modalEmpenhos');
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden'; // Evita scroll do fundo
   }
 
+  // Fecha modal de gestão de empenhos
   function fecharModalEmpenhos() {
-    document.getElementById('modalEmpenhos').style.display = 'none';
+    const modal = document.getElementById('modalEmpenhos');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = 'auto';
     fornecedorAtualIndex = null;
     itensEmpenho = [];
   }
@@ -487,7 +610,7 @@
       else el.value = '';
     });
 
-      // Limpar itens do empenho
+    // Limpar itens do empenho
     itensEmpenho = [];
     atualizarTabelaItensEmpenho();
 
@@ -499,7 +622,7 @@
     atualizarTotaisEmpenho();
   }
 
-  // Adicionar item ao empenho
+  // Adiciona item ao empenho
   function adicionarItemEmpenho() {
     const descricao = document.getElementById('descricaoItem').value.trim().toUpperCase();
     const valorUnitario = parseFloat(document.getElementById('valorUnitarioItem').value);
@@ -518,7 +641,6 @@
       return;
     }
 
-    // Adiciona item ao array
     itensEmpenho.push({
       descricao,
       valorUnitario,
@@ -547,9 +669,9 @@
 
       tr.innerHTML = `
         <td>${item.descricao}</td>
-        <td class="text-right">${item.valorUnitario.toFixed(2).replace('.', ',')}</td>
+        <td class="text-right">${formatarMoeda(item.valorUnitario)}</td>
         <td class="text-right">${item.descontoItem.toFixed(2).replace('.', ',')}</td>
-        <td class="text-right">${item.valorTotal.toFixed(2).replace('.', ',')}</td>
+        <td class="text-right">${formatarMoeda(item.valorTotal)}</td>
         <td class="text-center">
           <button class="btn-small" onclick="removerItemEmpenho(${index})" title="Remover Item">X</button>
         </td>
@@ -574,9 +696,9 @@
     const descontoGeral = parseFloat(document.getElementById('descontoEmpenho').value) || 0;
     const valorComDesconto = valorTotalItens * (1 - descontoGeral / 100);
 
-    document.getElementById('valorTotalItens').textContent = valorTotalItens.toFixed(2).replace('.', ',');
+    document.getElementById('valorTotalItens').textContent = formatarMoeda(valorTotalItens);
     document.getElementById('descontoGeralExibido').textContent = descontoGeral.toFixed(2).replace('.', ',') + '%';
-    document.getElementById('valorTotalComDesconto').textContent = valorComDesconto.toFixed(2).replace('.', ',');
+    document.getElementById('valorTotalComDesconto').textContent = formatarMoeda(valorComDesconto);
   }
 
   // Atualiza totais ao mudar desconto geral
@@ -599,7 +721,6 @@
       return;
     }
 
-    
     const planoInterno = document.getElementById('planoInterno').value.trim().toUpperCase();
     const notaCredito = document.getElementById('notaCredito').value.trim().toUpperCase();
     const pec = document.getElementById('pec').value.trim().toUpperCase();
@@ -611,14 +732,12 @@
     const quantidadePregao = parseInt(document.getElementById('quantidadePregao').value) || 0;
     const naturezaDespesa = document.getElementById('naturezaDespesa').value.trim().toUpperCase();
 
-    // Verifica se empenho já existe para o fornecedor
     const fornecedor = fornecedores[fornecedorAtualIndex];
     if (fornecedor.empenhos.some(e => e.numeroEmpenho === numeroEmpenho)) {
       alert('Empenho com este número já cadastrado para este fornecedor.');
       return;
     }
 
-    // Monta objeto empenho
     const empenho = {
       numeroEmpenho,
       planoInterno,
@@ -631,17 +750,15 @@
       itemPregao,
       quantidadePregao,
       naturezaDespesa,
-      itens: [...itensEmpenho], // copia dos itens
+      itens: [...itensEmpenho],
       get valorTotalEmpenho() {
         const totalItens = this.itens.reduce((acc, item) => acc + item.valorTotal, 0);
         return totalItens * (1 - this.desconto / 100);
       }
     };
 
-    // Adiciona empenho ao fornecedor
     fornecedor.empenhos.push(empenho);
 
-    // Atualiza tabela e limpa formulário
     atualizarTabelaEmpenhos();
     limparFormularioEmpenho();
 
@@ -670,7 +787,7 @@
         <td class="text-right">${e.itemPregao || '-'}</td>
         <td class="text-right">${e.quantidadePregao || '-'}</td>
         <td>${e.naturezaDespesa || '-'}</td>
-        <td class="text-right">${e.valorTotalEmpenho.toFixed(2).replace('.', ',')}</td>
+        <td class="text-right">${formatarMoeda(e.valorTotalEmpenho)}</td>
         <td class="text-center">
           <button class="btn-small" onclick="removerEmpenho(${i})" title="Remover Empenho">X</button>
         </td>
@@ -695,6 +812,9 @@
       fecharModalEmpenhos();
     }
   };
+
+  // Inicializa lista fornecedores vazia
+  atualizarListaFornecedores();
 </script>
 
 </body>
