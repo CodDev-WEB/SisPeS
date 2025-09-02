@@ -3,15 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sistema de Pedidos - Peças e Serviços</title>
+<title>Sistema de Pedidos - Viaturas, Fornecedores e Pedidos</title>
 <style>
   body {
     font-family: Arial, sans-serif;
     margin: 0; padding: 0; background: #f4f7f8; color: #333;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
   }
   header {
     background: #34495e; color: white; padding: 15px 20px;
     font-size: 1.5em; font-weight: bold;
+    text-align: center;
   }
   nav {
     display: flex; background: #2c3e50;
@@ -32,8 +36,6 @@
   }
   main {
     padding: 20px;
-    max-width: 900px;
-    margin: auto;
   }
   section {
     display: none;
@@ -173,11 +175,28 @@
     font-size: 0.9em;
     color: #555;
   }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  th {
+    background-color: #1abc9c;
+    color: white;
+  }
+  tbody tr:nth-child(even) {
+    background-color: #eaf2f8;
+  }
 </style>
 </head>
 <body>
 
-<header>Sistema de Pedidos - Peças e Serviços</header>
+<header>Sistema de Pedidos - Viaturas, Fornecedores e Pedidos</header>
 
 <nav>
   <button class="active" data-tab="tab-viaturas">Viaturas/Equipamentos</button>
@@ -188,18 +207,19 @@
 <main>
   <!-- Viaturas -->
   <section id="tab-viaturas" class="active">
-    <h2>Cadastro de Viaturas/Equipamentos</h2>
-    <div class="flex-row">
-      <input type="text" id="viaturaPrefixo" placeholder="Prefixo" />
-      <input type="text" id="viaturaMarca" placeholder="Marca" />
-      <input type="text" id="viaturaChassi" placeholder="Chassi/Série" />
-      <input type="text" id="viaturaModelo" placeholder="Modelo" />
-      <input type="number" id="viaturaAno" placeholder="Ano" min="1900" max="2100" />
-    </div>
-    <button class="primary" onclick="addViatura()">Adicionar Viatura</button>
-
-    <h3>Viaturas Cadastradas</h3>
-    <ul id="listaViaturas"></ul>
+    <h2>Lista de Viaturas e Equipamentos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Prefixo</th>
+          <th>Chassi</th>
+          <th>Fabricante</th>
+          <th>Modelo</th>
+          <th>Ano</th>
+        </tr>
+      </thead>
+      <tbody id="viaturasTableBody"></tbody>
+    </table>
   </section>
 
   <!-- Fornecedores -->
@@ -272,25 +292,197 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-  // Dados em memória
-  const viaturas = [];
+  // Dados viaturas fixos conforme lista fornecida
+  const viaturas = {
+    "AM-00064": { chassi: "93YMAF4MEEJ634527", fabricante: "RENAULT", modelo: "MASTER FURGÃO UTI", ano: "2012" },
+            "AM-00088": { chassi: "9BFLF49P8HB011899", fabricante: "FORD", modelo: "F4000", ano: "2017" },
+            "CÂMARA FRIGORÍFICA": { chassi: "9A9FR3883ECDB5485", fabricante: "NIJU", modelo: "NJSRFR 3E", ano: "2012" },
+            "CB-00566": { chassi: "9BFZEANE4JBS68029 1034799", fabricante: "FORD", modelo: "2629", ano: "2017" },
+            "CB-00569": { chassi: "9BFZEANE2JBS68031", fabricante: "FORD", modelo: "2629", ano: "2017" },
+            "CB-00593": { chassi: "9BM6933865B428451", fabricante: "MERCEDES BENZ", modelo: "2423K", ano: "2005" },
+            "CB-00685": { chassi: "9BM958170NB281372", fabricante: "MERCEDES BENZ", modelo: "ATEGO 2730", ano: "2022" },
+            "CB-00686": { chassi: "9BM958170NB281400", fabricante: "MERCEDES BENZ", modelo: "ATEGO 2730", ano: "2022" },
+            "CB-00687": { chassi: "9BM958170NB280581", fabricante: "MERCEDES BENZ", modelo: "ATEGO 2730", ano: "2022" },
+            "CB-00688": { chassi: "9BM958170NB280693", fabricante: "MERCEDES BENZ", modelo: "ATEGO 2730", ano: "2022" },
+            "CB-00689": { chassi: "9BM958170NB281107", fabricante: "MERCEDES BENZ", modelo: "ATEGO 2730", ano: "2022" },
+            "CB-NC-SGA-CB-CHASSI-96776": { chassi: "93KKZ60D2RE196776", fabricante: "VOLVO", modelo: "VM 360 6X4 R", ano: "2024" },
+            "CC-00751": { chassi: "9BM958034CB877619", fabricante: "MERCEDES BENZ", modelo: "ATEGO 1418/48 9TON 4X2", ano: "2012" },
+            "CDA-00046": { chassi: "9BM958074EB949227", fabricante: "MERCEDES BENZ", modelo: "ATEGO 1719", ano: "2014" },
+            "CDA-00063": { chassi: "9BFYEALE8KBS73458", fabricante: "FORD", modelo: "CARGO 2429", ano: "2018" },
+            "CG-00068": { chassi: "9BM958174JB087409", fabricante: "MERCEDES BENZ", modelo: "2730/48", ano: "2018" },
+            "CL-00056": { chassi: "9BFYCE7V2ABB56838", fabricante: "FORD", modelo: "CARGO 1722 É", ano: "2010" },
+            "CL-00071": { chassi: "9BFZEANE3DBS23054", fabricante: "FORD", modelo: "CARGO 2629", ano: "2012" },
+            "CM-00114": { chassi: "9BM958461AB730093", fabricante: "MERCEDES BENZ", modelo: "AXOR 2540", ano: "2010" },
+            "CM-00116": { chassi: "9BM958453KB118549 457910V1033488", fabricante: "MERCEDES BENZ", modelo: "AXOR TETO ALTO 2644 6X4S", ano: "2019" },
+            "CM-00117": { chassi: "9BSR6X400E3862856", fabricante: "SCANIA", modelo: "R480/R124", ano: "2014" },
+            "CO-00021": { chassi: "9BFYCE7V4ABB56193", fabricante: "FORD", modelo: "CARGO 1722 É", ano: "2010" },
+            "CO-00043": { chassi: "9BM6931825B423554", fabricante: "MERCEDES BENZ", modelo: "1720", ano: "2005" },
+            "CPD-00380": { chassi: "93XLJKL1TJCJ07238", fabricante: "MITSUBISHI", modelo: "TRITON-L200 SPT GL 2.4", ano: "2018" },
+            "CQT-00132": { chassi: "N/A", fabricante: "VOLKSWAGEN", modelo: "WORKER EURO 4X4", ano: "2013" },
+            "CQT-00133": { chassi: "9533172S8DR342505", fabricante: "VOLKSWAGEN", modelo: "WORKER EURO 4X4", ano: "2013" },
+            "CQT-00135": { chassi: "9533172S2ER402671", fabricante: "VOLKSWAGEN", modelo: "WORKER EURO 4X4", ano: "2013" },
+            "CQT-00137": { chassi: "9533172S7DR319183", fabricante: "VOLKSWAGEN", modelo: "WORKER EURO 4X4", ano: "2013" },
+            "CQT-00138": { chassi: "9533172S3DR331556", fabricante: "VOLKSWAGEN", modelo: "WORKER EURO 4X4", ano: "2013" },
+            "CQT-00261": { chassi: "9533172S9DR319279", fabricante: "VOLKSWAGEN", modelo: "WORKER EURO 4X4", ano: "2013" },
+            "CTA-00100": { chassi: "9BFZCE9V6ABB53372", fabricante: "FORD", modelo: "2622E", ano: "2010" },
+            "CTA-00120": { chassi: "9533B82U5DR312401", fabricante: "VOLKSWAGEN", modelo: "WORKER 26 260 É", ano: "2012" },
+            "CTA-00134": { chassi: "9533882U9DR319710", fabricante: "VOLKSWAGEN", modelo: "WORKER 26 260 É", ano: "2013" },
+            "CTA-00138": { chassi: "9533B8Z9DUR318735", fabricante: "VOLKSWAGEN", modelo: "WORKER 26 260 É", ano: "2013" },
+            "CTA-00177": { chassi: "93ZE12NMZJ8932865", fabricante: "IVECO", modelo: "TECTOR 260E30", ano: "2017" },
+            "CTC-00046": { chassi: "9BFZEANE2DBS30125", fabricante: "FORD", modelo: "2629", ano: "2011" },
+            "ONR-00079": { chassi: "9532882W5CR208047", fabricante: "VOLKSWAGEN", modelo: "SENIOR MIDI 15190", ano: "2012" },
+            "ONR-00077": { chassi: "9532J82Z4DR334433", fabricante: "VOLKSWAGEN", modelo: "18.320 EOT", ano: "2013" },
+            "ONU-00037": { chassi: "9532G82W4JR807599", fabricante: "VOLKSWAGEN", modelo: "17,230 GRAN VIA", ano: "2017" },
+            "PA-00003": { chassi: "9A9PR45638LDJ5016", fabricante: "LIBRELATO", modelo: "SRPR3E", ano: "2007" },
+            "PB-00052": { chassi: "9A9P1463EECEM5027", fabricante: "MORUMBI", modelo: "SP,PR,3EX", ano: "2014" },
+            "PB-00069": { chassi: "9A9P1604DDCEM5168", fabricante: "MORUMBI", modelo: "PLATAFORMA", ano: "2013" },
+            "VTE-00003": { chassi: "9533B82U9HR703184", fabricante: "VOLKSWAGEN", modelo: "26 260", ano: "2016" },
+            "AB-00007": { chassi: "BX14M05009 MOTOR: B521497B", fabricante: "FIORI", modelo: "DB X35", ano: "2018" },
+            "CA-00080": { chassi: "625366700016", fabricante: "MOTOMIL", modelo: "CMAV20250", ano: "2019" },
+            "CR-00108": { chassi: "HBZBW20EEEAE06253", fabricante: "CASE", modelo: "W20E CAB", ano: "2013" },
+            "CR-00120": { chassi: "KMTWA105TJBB20703", fabricante: "KOMATSU", modelo: "WA 200-6", ano: "2018" },
+            "CR-00122": { chassi: "KMTWA105CJBB20612", fabricante: "KOMATSU", modelo: "WA200-6", ano: "2018" },
+            "EA-00001": { chassi: "3656", fabricante: "CMV", modelo: "DA 3660", ano: "2006" },
+            "EM-00008": { chassi: "A3AD03880", fabricante: "HENRY", modelo: "CPYD50", ano: "2015" },
+            "ES-00097": { chassi: "HBZN220CCHAA02529 Nr Série 210CL200098", fabricante: "CASE", modelo: "CX220C", ano: "2017" },
+            "ES-00101": { chassi: "NHAA02468", fabricante: "CASE", modelo: "CX220C", ano: "2017" },
+            "ES-00109": { chassi: "1F9210GXEJD520986", fabricante: "JOHN DEERE", modelo: "210G", ano: "2018" },
+            "ES-00118": { chassi: "CAT0320DKA8F03183", fabricante: "CATERPILLAR", modelo: "320 DL", ano: "2008" },
+            "EX-00014": { chassi: "EHD-1807001", fabricante: "IMB", modelo: "2000HD", ano: "2018" },
+            "EX-00016": { chassi: "EMMA1904006", fabricante: "IMB", modelo: "IBM 900G MASTER", ano: "2019" },
+            "EX-NC-SGA-EX-SERIE-08011": { chassi: "EMST.2008011", fabricante: "IMB", modelo: "900 G", ano: "2020" },
+            "GD-00136": { chassi: "60998474001004", fabricante: "BALDAN", modelo: "GTCR DE 16C/DSC REC 32", ano: "2017" },
+            "GD-00139": { chassi: "11983901", fabricante: "WV", modelo: "GAICR 20X26 20d x 26pol", ano: "2018" },
+            "GD-00140": { chassi: "11983902", fabricante: "WV", modelo: "GAICR 20X26 20d x 26pol", ano: "2018" },
+            "GD-00141": { chassi: "11983903", fabricante: "WV", modelo: "GAICR 20X26 20d x 26pol", ano: "2018" },
+            "GD-00157": { chassi: "0102060065-9680", fabricante: "MARCHESAN", modelo: "GAPCR S-0603", ano: "2019" },
+            "GD-00158": { chassi: "0102060065-9681", fabricante: "MARCHESAN", modelo: "GAPCR S-0603", ano: "2019" },
+            "GD-NC-GD-SGA-NS-01001": { chassi: "1050996001001", fabricante: "BALDAN", modelo: "CRI -DE 24 / DSC REC 28", ano: "2022" },
+            "GE-00199": { chassi: "PW935639", fabricante: "GERAPOWER BRASIL", modelo: "400KVA - CUMMINS NTA855G1B GF3-500", ano: "2018" },
+            "GE-00211": { chassi: "MOTOR: B506821T 10P0026", fabricante: "HEIMER", modelo: "ATED27/19 (100KVA)", ano: "2007" },
+            "GE-00213": { chassi: "Não possui", fabricante: "GERAPOWER BRASIL", modelo: "GB5000", ano: "2019" },
+            "GE-00221": { chassi: "A15T033686", fabricante: "POWER GENERATION", modelo: "C185D6 231 KVA", ano: "2015" },
+            "GE-NC-SGA-GE-1001": { chassi: "1536401001", fabricante: "MAXITRUST", modelo: "MX508SWABAS3", ano: "2022" },
+            "KCV-00122": { chassi: "WHCOH221NH0000018", fabricante: "HAMM-WIRTGEM GROUP", modelo: "3411P", ano: "2017" },
+            "KCV-00128": { chassi: "VCE0S105VJ0707263", fabricante: "VOLVO", modelo: "SD105", ano: "2018" },
+            "KCV-00129": { chassi: "VCE0S105CJ0707262", fabricante: "VOLVO", modelo: "SD105", ano: "2018" },
+            "KCV-00131": { chassi: "WHCOH221NH0000022", fabricante: "HAMM-WIRTGEM GROUP", modelo: "3411P", ano: "2017" },
+            "KCV-00179": { chassi: "10000181CNB007529", fabricante: "DYNAPAC", modelo: "CA30PD", ano: "2022" },
+            "KCV-00180": { chassi: "10000181HNB007530", fabricante: "DYNAPAC", modelo: "CA30PD", ano: "2022" },
+            "KCV-NOVO-CHASSI-7667": { chassi: "10000181VNB07667", fabricante: "DYNAPAC", modelo: "CA30PD", ano: "2022" },
+            "KCV-NOVO-CHASSI-7763": { chassi: "10000181JNB007763", fabricante: "DYNAPAC", modelo: "CA30PD", ano: "2022" },
+            "KCV-NOVO-CHASSI-7979": { chassi: "1000018LPB007979", fabricante: "DYNAPAC", modelo: "CA30PD", ano: "2021" },
+            "KLT-00010": { chassi: "40411101401A", fabricante: "COMPACT POWER", modelo: "RWYL51C", ano: "2017" },
+            "KLT-00011": { chassi: "WHCOH245NJ0000037", fabricante: "HAMM-WIRTGEM GROUP", modelo: "HD90", ano: "2018" },
+            "KLT-00012": { chassi: "WHCOH245NJ0000033", fabricante: "HAMM-WIRTGEM GROUP", modelo: "HD90", ano: "2018" },
+            "KLV-00102": { chassi: "10000108CJB005659", fabricante: "DYNAPAC", modelo: "CA250", ano: "2018" },
+            "KM-00100": { chassi: "EQP: CPM4L18012513; MOTOR: T2180018010078103", fabricante: "MATSUYAMA", modelo: "CPM4L", ano: "2018" },
+            "KP-00066": { chassi: "CAT0CW34P3G400157", fabricante: "CATERPILLAR", modelo: "CW34", ano: "2018" },
+            "KP-00067": { chassi: "CAT0CW34J3G400159", fabricante: "CATERPILLAR", modelo: "CW34", ano: "2018" },
+            "KP-00069": { chassi: "CAT0CW34P3G400160", fabricante: "CATERPILLAR", modelo: "CW34", ano: "2018" },
+            "MC-00023": { chassi: "JAFSV185466655", fabricante: "CASE", modelo: "SV185", ano: "2013" },
+            "MN-00003": { chassi: "CAT0140HCCA02771", fabricante: "CATERPILLAR", modelo: "140 H", ano: "2006" },
+            "MN-00138": { chassi: "CAT0140KCJPA01833", fabricante: "CATERPILLAR", modelo: "140K", ano: "2013" },
+            "MN-00149": { chassi: "CAT0120KCJAP07005", fabricante: "CATERPILLAR", modelo: "120K", ano: "2017" },
+            "MN-00150": { chassi: "CAT0120KCJAP07004", fabricante: "CATERPILLAR", modelo: "120K", ano: "2017" },
+            "MN-00151": { chassi: "CAT0120KCJAP07012", fabricante: "CATERPILLAR", modelo: "120K", ano: "2017" },
+            "MN-NC-SGA-MN-CHASSI-0301": { chassi: "1BZ670GAKND000301", fabricante: "JOHN DEERE", modelo: "670G", ano: "2022" },
+            "PVA-00049": { chassi: "CP540006", fabricante: "CIBER", modelo: "AF5000", ano: "2018" },
+            "PVA-00050": { chassi: "CP540007", fabricante: "CIBER", modelo: "AF5000", ano: "2018" },
+            "RE-00094": { chassi: "1BZ310KXEGC000866", fabricante: "JOHN DEERE", modelo: "310K", ano: "2016" },
+            "RE-00101": { chassi: "CAT0420FCLBS01096", fabricante: "CATERPILLAR", modelo: "420F2", ano: "2017" },
+            "RE-00102": { chassi: "CAT0420FKLBS01099", fabricante: "CATERPILLAR", modelo: "420F2", ano: "2017" },
+            "RM-00004": { chassi: "03WR0365", fabricante: "WIRTGEN", modelo: "WR2000", ano: "2010" },
+            "TA-00121": { chassi: "R004404A", fabricante: "AGRALE", modelo: "BX 6.150", ano: "2010" },
+            "TA-00158": { chassi: "1BM6150JJHD000433", fabricante: "JOHN DEERE", modelo: "6150J MAR-I", ano: "2017" },
+            "TA-00165": { chassi: "W18456858", fabricante: "VALTRA", modelo: "BH184 4X4", ano: "2019" },
+            "TA-00166": { chassi: "W18456859", fabricante: "VALTRA", modelo: "BH184 4X4", ano: "2019" },
+            "TA-NC-SGA-TA-40146": { chassi: "1BM6150JCND640146", fabricante: "JOHN DEERE", modelo: "6150J", ano: "2022" },
+            "TE-00086": { chassi: "BJG07278 CAT00D6NHCCK00981", fabricante: "CATERPILLAR", modelo: "D6N", ano: "2008" },
+            "TE-00130": { chassi: "GCT02004 2692038", fabricante: "CATERPILLAR", modelo: "D6T", ano: "2013" },
+            "TE-00134": { chassi: "HBZN150BCFAC00625", fabricante: "NEW HOLLAND", modelo: "D150B", ano: "2015" },
+            "TI-00056": { chassi: "PW935217", fabricante: "GERAPOWER BRASIL", modelo: "RWZM41C", ano: "2019" },
+            "TI-00057": { chassi: "PW935218", fabricante: "GERAPOWER BRASIL", modelo: "RWZM41C", ano: "2019" },
+            "UA-00038": { chassi: "9A98RNC13HPDM7132 nº serie c1120130", fabricante: "CIBER", modelo: "BR", ano: "2018" },
+            "VM-NC-SGA-VM-FKT-01": { chassi: "10107/18", fabricante: "J COLOMBO", modelo: "TANGARA", ano: "2018" },
+            "AB-00010 (6º BEC)": { chassi: "201112052", fabricante: "Hank", modelo: "HK4.0", ano: "2020" },
+            "AB-00012 (6º BEC)": { chassi: "BX14M00528", fabricante: "FIORI", modelo: "DBX35", ano: "2022" },
+            "AB-00011 (5º BEC)": { chassi: "BX14M00550", fabricante: "FIORI", modelo: "BX14M0050", ano: "2021" },
+            "ES-00004 (6º BEC)": { chassi: "N6AAOLL89", fabricante: "NEW HOLLAND", modelo: "E 215 LC", ano: "2007" },
+            "ES-00125 (6º BEC)": { chassi: "2797699", fabricante: "JCB", modelo: "JS22OLC", ano: "2020" },
+            "ES-NC-SGA-ES-CHASSI-S0RJS21CCP3161925-21º Cia-E-Cnst": { chassi: "S0RJS21CCP3161925", fabricante: "JCB", modelo: "JS210SC", ano: "2023" },
+            "ES-00121 (5º BEC)": { chassi: "NKAA03108", fabricante: "NEW HOLLAND", modelo: "E215.C EVO", ano: "2019" },
+            "ES-00130 (5º BEC)": { chassi: "SORJS21CHM3089738", fabricante: "JCB", modelo: "SORJS21", ano: "2021" },
+            "EX-00018 (5º BEC)": { chassi: "FMO 191003", fabricante: "IBM", modelo: "900G", ano: "2019" },
+            "GD-00174 (6º BEC)": { chassi: "GRI00334/20", fabricante: "RHOMA", modelo: "ICR 20X26", ano: "2020" },
+            "GD-00176 (6º BEC)": { chassi: "GRI00337/20", fabricante: "RHOMA", modelo: "ICR 20X26", ano: "2020" },
+            "NC-SGA-GD-01-6ªCIAENGCMB": { chassi: "-", fabricante: "KLR", modelo: "GAC270 1828", ano: "2019" },
+            "GD-00179 (5º BEC)": { chassi: "-", fabricante: "PICCIN", modelo: "GAICR 24 X 26", ano: "2020" },
+            "GD-00177 (5º BEC)": { chassi: "-", fabricante: "PICCIN", modelo: "GAICR 24 X 26", ano: "2020" },
+            "KCV-00130 (6º BEC)": { chassi: "VCE0S105HJ0707249", fabricante: "VOLVO", modelo: "SD105", ano: "2018" },
+            "KCV-00132 (6º BEC)": { chassi: "VCE0S105HJ0707242", fabricante: "VOLVO", modelo: "SD105", ano: "2018" },
+            "KCV-00133 (6º BEC)": { chassi: "VCE0S105PJ0707244", fabricante: "VOLVO", modelo: "SD 105", ano: "2018" },
+            "KCV-00175 (6º BEC)": { chassi: "GP500187", fabricante: "CATERPILLAR", modelo: "CP54B", ano: "2020" },
+            "KCV-00176 (6º BEC)": { chassi: "XUGO1231CNAE00578", fabricante: "XCMG", modelo: "XS123PDBR", ano: "2021" },
+            "KCV-00191 (6º BEC)": { chassi: "71", fabricante: "ROMANELLI", modelo: "VAP70", ano: "2023" },
+            "KCV-00193 (5º BEC)": { chassi: "H00422526", fabricante: "JCB", modelo: "JCB116D", ano: "2024" },
+            "KCV-00194 (5º BEC)": { chassi: "H00429287", fabricante: "JCB", modelo: "JCB116D", ano: "2024" },
+            "KCV-00171 (5º BEC)": { chassi: "LDA00150NK0100110", fabricante: "MULLER", modelo: "VAP70PT", ano: "2019" },
+            "MN-00156 (6º BEC)": { chassi: "HBZN0140KJAF07407 / NJAF07407", fabricante: "NEW HOLLAND", modelo: "RG140B", ano: "2018" },
+            "MN-00166 (6º BEC)": { chassi: "HBZN0140KJAF07409", fabricante: "NEW HOLLAND", modelo: "RG140B", ano: "2018" },
+            "MN-00167 (5º BEC)": { chassi: "NKAF07716", fabricante: "NEW HOLLAND", modelo: "RG-140B", ano: "2019" },
+            "RE-00121 (6º BEC)": { chassi: "S0R3CXTTVL2935818", fabricante: "JCB", modelo: "3CXB14CM2CM", ano: "2018" },
+            "RE-00123 (6º BEC)": { chassi: "S0R3CXTTCM3088060", fabricante: "JCB", modelo: "3CXB14CM2CM", ano: "2021" },
+            "TA-00071 (6º BEC)": { chassi: "27CC29237 / TM35R400876", fabricante: "NEW HOLLAND", modelo: "TM135", ano: "2007" },
+            "TA-00161 (6º BEC)": { chassi: "HCCZ7175TECV55923 / T7175SC10865", fabricante: "NEW HOLLAND", modelo: "T7.175", ano: "2017" },
+            "TA-00162 (6º BEC)": { chassi: "HCCZ7175TECV55940 / T7175SC10866", fabricante: "NEW HOLLAND", modelo: "T7.175", ano: "2017" },
+            "TA-NC-SGA-TA-707-6ªCIAENGCMB": { chassi: "HCCZTL80VKCJ94707", fabricante: "NEW HOLLAND", modelo: "TL5.80", ano: "2019" },
+            "TA-00139 (5º BEC)": { chassi: "239021292", fabricante: "AGRALE", modelo: "BX - 6150", ano: "2014" },
+            "TA-00130 (5º BEC)": { chassi: "2390212792", fabricante: "AGRALE", modelo: "BX - 6150", ano: "2014" },
+            "NC-SGA-TE-306-6ªCIAENGCMB": { chassi: "P5T00306", fabricante: "CATERPILLAR", modelo: "D6N XL", ano: "2019" },
+            "TEA-00009-2ºBFV": { chassi: "7072410022", fabricante: "TEREX", modelo: "CAP", ano: "2007" },
+            "CB-00633 (6º BEC)": { chassi: "953658268MR120105", fabricante: "VW", modelo: "VW 26 280 CRM 6X4", ano: "2020" },
+            "CB-00630 (6º BEC)": { chassi: "953658263MR120075", fabricante: "VW", modelo: "VW 26 280 CRM 6X4", ano: "2020" },
+            "CB-00635 (6º BEC)": { chassi: "953658260MR120101", fabricante: "VW", modelo: "VW 26 280 CRM 6X4", ano: "2020" },
+            "CB-00632 (6º BEC)": { chassi: "953658268MR120024", fabricante: "VW", modelo: "VW 26 280 CRM 6X4", ano: "2020" },
+            "CB-00634 (6º BEC)": { chassi: "953658266MR120118", fabricante: "VW", modelo: "VW 26 280 CRM 6X4", ano: "2020" },
+            "CB-00691 (6º BEC)": { chassi: "93KK0Y1DXRE193955", fabricante: "VOLVO", modelo: "VM 290", ano: "2023" },
+            "CB-00631 (6º BEC)": { chassi: "953658260MR120079", fabricante: "VW", modelo: "VW 26 280 CRM 6X4", ano: "2020" },
+            "CB-NC-SGA-CB-CHASSI-58116-34ºBIS": { chassi: "9533172S0DR358116", fabricante: "VOLKSWAGEN", modelo: "15180E3W", ano: "2013" },
+            "CB-00518 (5º BEC)": { chassi: "9BM693388EB967190", fabricante: "MERCEDEZ BENZ", modelo: "ATRON 2726K/36 6X4", ano: "2014" },
+            "CB-00638 (5º BEC)": { chassi: "9BM958170LB202608", fabricante: "MERCEDEZ BENZ", modelo: "ATEGO2730K/36", ano: "2020" },
+            "CB-00645 (5º BEC)": { chassi: "9BM958170LB202641", fabricante: "MERCEDEZ BENZ", modelo: "ATEGO2730K/36", ano: "2020" },
+            "CB-00641 (5º BEC)": { chassi: "9BM958170LB202599", fabricante: "MERCEDEZ BENZ", modelo: "ATEGO2730K/36", ano: "2020" },
+            "CB-00646 (5º BEC)": { chassi: "9BM958170LB201357", fabricante: "MERCEDEZ BENZ", modelo: "ATEGO2730K/36", ano: "2020" },
+            "CB-00675 (5º BEC)": { chassi: "9BM958174KB125891", fabricante: "MERCEDEZ BENZ", modelo: "ATEGO2730/48", ano: "2019" },
+            "CB-00676 (5º BEC)": { chassi: "9BM958174KB126264", fabricante: "MERCEDEZ BENZ", modelo: "2730/48", ano: "2019" },
+            "CB-00674 (5º BEC)": { chassi: "-", fabricante: "MERCEDEZ BENZ", modelo: "ATEGO 2730", ano: "2019" },
+            "CG-00064 (6º BEC)": { chassi: "953658263GR607667", fabricante: "VOLKSWAGEN", modelo: "26 280", ano: "2016" },
+            "CL-00066 (6º BEC)": { chassi: "9BFZEANE6DBS23016", fabricante: "FORD", modelo: "CARGO 2629", ano: "2012" },
+            "CPD-00384 (6º BEC)": { chassi: "8AJFY22G0F8028091", fabricante: "TOYOTA", modelo: "HILUX CD 4X4 STD", ano: "2015" },
+            "CQT-00167 (6º BEC)": { chassi: "9533172S9DR345266", fabricante: "VW", modelo: "WORKER 15.210", ano: "2013" },
+            "CQT-00151 (6º BEC)": { chassi: "9BM958078DB911530", fabricante: "MERCEDEZ BENZ", modelo: "ATEGO 1725/42", ano: "2013" },
+            "CTA-00150 (6º BEC)": { chassi: "9BFZEANE2DBS22994", fabricante: "FORD", modelo: "CARGO 2629", ano: "2012" },
+            "CTA-00148 (6º BEC)": { chassi: "9BFZEANEXDBS18949", fabricante: "FORD", modelo: "CARGO 2629", ano: "2012" },
+            "CTA-NC-SGA-CTA-CHASSI-27388-34ºBIS": { chassi: "9BFZEANE8DBS27388", fabricante: "FORD", modelo: "FORD CARGO 2629 6X4", ano: "2012" },
+            "CTA-NC-SGA-CTA-CHASSI-16718-34ºBIS": { chassi: "9533B82UXDR316718", fabricante: "VOLKSWAGEN", modelo: "26260E", ano: "2013" },
+            "CTA-00126 (5º BEC)": { chassi: "9533B82U3DR316592", fabricante: "VOLKSWAGEM", modelo: "26.260E", ano: "2012" },
+            "NC-SGA-PB-01-CHASSI 8003-6ªCIAENGCMB": { chassi: "9A9SRCT4EMPF08003", fabricante: "TEIXEIRA", modelo: "SR CT 4E", ano: "2021" },
+            "NC-SGA-RTA-CIB-314-COMARA": { chassi: "-", fabricante: "NAO INDENTIFICADO", modelo: "TANQUE 30.000 l", ano: "NAO INDENTIFICADO" },
+            "NC-SGA-RTA-CIB-320-1978-COMARA": { chassi: "-", fabricante: "NAO INDENTIFICADO", modelo: "TANQUE 30.000 l", ano: "1978" },
+            "NC-SGA-RTA-CIF-306-1983-COMARA": { chassi: "-", fabricante: "FNV-FRUEHAUF", modelo: "TANQUE 30.000 l", ano: "1983" }
+
+        };
+
+  // Fornecedores e pedidos em memória
   const fornecedores = [];
   const pedidos = [];
   let itensPedido = [];
   let historico = [];
 
-  // Elementos
-  const viaturaPrefixo = document.getElementById('viaturaPrefixo');
-  const viaturaMarca = document.getElementById('viaturaMarca');
-  const viaturaChassi = document.getElementById('viaturaChassi');
-  const viaturaModelo = document.getElementById('viaturaModelo');
-  const viaturaAno = document.getElementById('viaturaAno');
-  const listaViaturas = document.getElementById('listaViaturas');
-
-  const fornecedorNome = document.getElementById('fornecedorNome');
-  const fornecedorContato = document.getElementById('fornecedorContato');
+  // Elementos DOM
+  const viaturasTableBody = document.getElementById('viaturasTableBody');
   const listaFornecedores = document.getElementById('listaFornecedores');
-
   const listaPedidos = document.getElementById('listaPedidos');
 
   // Modal elementos
@@ -317,36 +509,29 @@
     });
   });
 
-  // Funções Viaturas
-  function addViatura() {
-    const prefixo = viaturaPrefixo.value.trim();
-    const marca = viaturaMarca.value.trim();
-    const chassi = viaturaChassi.value.trim();
-    const modelo = viaturaModelo.value.trim();
-    const ano = parseInt(viaturaAno.value);
-    if (!prefixo || !marca || !chassi || !modelo || !ano) {
-      alert('Preencha todos os campos da viatura.');
-      return;
+  // Preencher tabela viaturas
+  function preencherTabelaViaturas() {
+    viaturasTableBody.innerHTML = '';
+    for (const prefixo in viaturas) {
+      if (viaturas.hasOwnProperty(prefixo)) {
+        const v = viaturas[prefixo];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${prefixo}</td>
+          <td>${v.chassi}</td>
+          <td>${v.fabricante}</td>
+          <td>${v.modelo}</td>
+          <td>${v.ano}</td>
+        `;
+        viaturasTableBody.appendChild(tr);
+      }
     }
-    viaturas.push({ prefixo, marca, chassi, modelo, ano });
-    atualizarListaViaturas();
-    atualizarSelectsModal();
-    viaturaPrefixo.value = '';
-    viaturaMarca.value = '';
-    viaturaChassi.value = '';
-    viaturaModelo.value = '';
-    viaturaAno.value = '';
-  }
-  function atualizarListaViaturas() {
-    listaViaturas.innerHTML = viaturas.map((v,i) =>
-      `<li><strong>${v.prefixo}</strong> - ${v.marca} ${v.modelo} (${v.ano}) - Chassi: ${v.chassi}</li>`
-    ).join('');
   }
 
-  // Funções Fornecedores
+  // Fornecedores
   function addFornecedor() {
-    const nome = fornecedorNome.value.trim();
-    const contato = fornecedorContato.value.trim();
+    const nome = document.getElementById('fornecedorNome').value.trim();
+    const contato = document.getElementById('fornecedorContato').value.trim();
     if (!nome) {
       alert('Informe o nome do fornecedor.');
       return;
@@ -354,24 +539,42 @@
     fornecedores.push({ nome, contato });
     atualizarListaFornecedores();
     atualizarSelectsModal();
-    fornecedorNome.value = '';
-    fornecedorContato.value = '';
+    document.getElementById('fornecedorNome').value = '';
+    document.getElementById('fornecedorContato').value = '';
   }
+
   function atualizarListaFornecedores() {
-    listaFornecedores.innerHTML = fornecedores.map((f,i) =>
+    listaFornecedores.innerHTML = fornecedores.map((f, i) =>
       `<li><strong>${f.nome}</strong> - Contato: ${f.contato || '-'}</li>`
     ).join('');
   }
 
   // Atualiza selects do modal
   function atualizarSelectsModal() {
-    pedidoViatura.innerHTML = '<option value="">Selecione a Viatura</option>' + viaturas.map((v,i) => `<option value="${i}">${v.prefixo} - ${v.marca} ${v.modelo} (${v.ano})</option>`).join('');
-    pedidoFornecedor.innerHTML = '<option value="">Selecione o Fornecedor</option>' + fornecedores.map((f,i) => `<option value="${i}">${f.nome}</option>`).join('');
+    // Viaturas
+    pedidoViatura.innerHTML = '<option value="">Selecione a Viatura</option>';
+    for (const prefixo in viaturas) {
+      if (viaturas.hasOwnProperty(prefixo)) {
+        const v = viaturas[prefixo];
+        const option = document.createElement('option');
+        option.value = prefixo;
+        option.textContent = `${prefixo} - ${v.fabricante} ${v.modelo} (${v.ano})`;
+        pedidoViatura.appendChild(option);
+      }
+    }
+    // Fornecedores
+    pedidoFornecedor.innerHTML = '<option value="">Selecione o Fornecedor</option>';
+    fornecedores.forEach((f, i) => {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = f.nome;
+      pedidoFornecedor.appendChild(option);
+    });
   }
 
   // Modal abrir/fechar
   function abrirModalPedido() {
-    if (viaturas.length === 0 || fornecedores.length === 0) {
+    if (Object.keys(viaturas).length === 0 || fornecedores.length === 0) {
       alert('Cadastre pelo menos uma viatura e um fornecedor antes de criar um pedido.');
       return;
     }
@@ -495,13 +698,13 @@
 
   // Salvar pedido (em memória)
   function salvarPedido() {
-    const viaturaIndex = pedidoViatura.value;
+    const viaturaPrefixo = pedidoViatura.value;
     const fornecedorIndex = pedidoFornecedor.value;
     const responsavel = pedidoResponsavel.value.trim();
     const data = pedidoData.value;
     const observacoes = pedidoObservacoes.value.trim();
 
-    if (viaturaIndex === '' || fornecedorIndex === '' || !responsavel || !data) {
+    if (!viaturaPrefixo || fornecedorIndex === '' || !responsavel || !data) {
       alert('Preencha todos os campos obrigatórios do pedido.');
       return;
     }
@@ -513,7 +716,7 @@
     const pedido = {
       id: pedidos.length + 1,
       tipo: tipoPedido.value,
-      viatura: viaturas[viaturaIndex],
+      viatura: { prefixo: viaturaPrefixo, ...viaturas[viaturaPrefixo] },
       fornecedor: fornecedores[fornecedorIndex],
       responsavel,
       data,
@@ -537,7 +740,7 @@
       li.innerHTML = `
         <div>
           <strong>Pedido #${p.id}</strong> - ${p.tipo === 'peca' ? 'Peças/Acessórios' : 'Serviços'}<br/>
-          Viatura: ${p.viatura.prefixo} - ${p.viatura.marca} ${p.viatura.modelo} (${p.viatura.ano})<br/>
+          Viatura: ${p.viatura.prefixo} - ${p.viatura.fabricante} ${p.viatura.modelo} (${p.viatura.ano})<br/>
           Fornecedor: ${p.fornecedor.nome}<br/>
           Responsável: ${p.responsavel}<br/>
           Data: ${p.data}<br/>
@@ -619,6 +822,7 @@
   }
 
   // Inicialização
+  preencherTabelaViaturas();
   atualizarSelectsModal();
   renderItemInputs();
 </script>
